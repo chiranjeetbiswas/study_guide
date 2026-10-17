@@ -11,6 +11,12 @@ GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 MONGODB_URL = os.getenv("MONGODB_URL", "mongodb://localhost:27017")
 MONGODB_DB = os.getenv("MONGODB_DB", "study_guide")
 
+# Websites allowed to call this API (browser CORS check). Comma-separated, no trailing slash, e.g.
+# https://my-frontend.onrender.com. The local dev frontend is always allowed.
+FRONTEND_ORIGINS = ["http://localhost:3001"] + [
+    o.strip().rstrip("/") for o in os.getenv("FRONTEND_ORIGIN", "").split(",") if o.strip()
+]
+
 # Signs login tokens. Anyone who knows it can forge a login, so it must be long, random and secret.
 JWT_SECRET = os.getenv("JWT_SECRET", "")
 if len(JWT_SECRET) < 32:

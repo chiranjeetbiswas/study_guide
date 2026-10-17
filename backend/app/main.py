@@ -7,7 +7,7 @@ from pymongo.database import Database
 
 from app.auth import get_current_user, router as auth_router
 from app.cards import router as cards_router
-from app.config import GROQ_API_KEY
+from app.config import FRONTEND_ORIGINS, GROQ_API_KEY
 from app.database import get_db, init_indexes
 from app.generate import router as generate_router
 from app.quiz import router as quiz_router
@@ -23,10 +23,10 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(title="AI Study Guide", lifespan=lifespan)
 
-# Lets the Next.js frontend (running on port 3001) call this backend
+# Lets the Next.js frontend (localhost:3001, or FRONTEND_ORIGIN when deployed) call this backend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3001"],
+    allow_origins=FRONTEND_ORIGINS,
     allow_methods=["*"],
     allow_headers=["*"],
 )
