@@ -1,0 +1,33 @@
+@import "tailwindcss";
+
+/* One calm light palette: warm off-white background, soft stone text */
+:root {
+  --background: #faf9f6;
+  --foreground: #292524;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), system-ui, sans-serif;
+}
+
+/* Printing (e.g. "Save as PDF" for an exam paper): show only the .print-area */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  body {
+    background: white;
+  }
+  main {
+    max-width: none !important;
+    padding: 0 !important;
+  }
+}
