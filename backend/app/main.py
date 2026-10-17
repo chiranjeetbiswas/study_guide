@@ -11,6 +11,7 @@ from app.config import GROQ_API_KEY
 from app.database import get_db, init_indexes
 from app.generate import router as generate_router
 from app.quiz import router as quiz_router
+from app.studyset import router as studyset_router
 
 
 @asynccontextmanager
@@ -34,6 +35,7 @@ app.include_router(auth_router)
 app.include_router(generate_router)
 app.include_router(cards_router)
 app.include_router(quiz_router)
+app.include_router(studyset_router)
 
 
 @app.get("/")
