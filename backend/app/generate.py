@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
 from pydantic import BaseModel
 from pymongo.database import Database
 
-from app import models
+from app import models, trace
 from app.auth import get_current_user
 from app.cards import CardOut, card_out
 from app.checker import check_answers
@@ -26,13 +26,15 @@ def generate_cards_for_note(db: Database, user: dict, note_id, notes: str, max_c
     """Generates, checks and saves cards for a note that already exists."""
     if not GROQ_API_KEY or GROQ_API_KEY.startswith(("paste-", "your-")):
         raise HTTPException(status_code=500, detail="GROQ_API_KEY is not set in backend/.env")
-    try:
-        result = generate_flashcards(notes, max_cards)
-    except Exception as e:
-        raise HTTPException(status_code=502, detail=f"Flashcard generation failed: {type(e).__name__}")
+    with trace.traced(db, user, "flashcards", note_id, input_chars=len(notes)):
+        try:
+            result = generate_flashcards(notes, max_cards)
+        except Exception as e:
+            raise HTTPException(status_code=502, detail=f"Flashcard generation failed: {type(e).__name__}")
 
-    # Second Groq call: does each answer contain anything the source sentence doesn't say?
-    checks = check_answers([(c.answer, c.source) for c in result.cards])
+        # Second Groq call: does each answer contain anything the source sentence doesn't say?
+        checks = check_answers([(c.answer, c.source) for c in result.cards])
+        trace.meta(cards_flagged_by_checker=sum(1 for c in checks if c.status != "supported"))
 
     card_docs = [
         models.new_card(

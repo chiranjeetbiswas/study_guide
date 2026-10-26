@@ -5,6 +5,7 @@ from groq import Groq
 
 from app.config import GROQ_API_KEY
 from app.flashcards import MODEL
+from app.trace import traced_create
 
 SUPPORTED = "supported"
 FLAGGED = "flagged"
@@ -44,7 +45,9 @@ def check_answers(items: list[tuple[str, str]]) -> list[CheckResult]:
 
     try:
         client = Groq(api_key=GROQ_API_KEY, max_retries=6)
-        completion = client.chat.completions.create(
+        completion = traced_create(
+            client,
+            "cards:check",
             model=MODEL,
             temperature=0,
             response_format={"type": "json_object"},

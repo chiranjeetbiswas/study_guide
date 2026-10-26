@@ -7,7 +7,9 @@ from concurrent.futures import ThreadPoolExecutor
 from groq import Groq
 from pydantic import BaseModel, Field
 
+from app import trace
 from app.config import GROQ_API_KEY
+from app.trace import traced_create
 
 # Groq production model (listed at console.groq.com/docs/models)
 MODEL = "openai/gpt-oss-120b"
@@ -74,22 +76,27 @@ def _snap_source(source: str, sentences: list[str], loose_notes: str) -> str | N
         return None
     for sentence in sentences:
         if loose_source == _loose(sentence):
+            trace.count("source_match_exact")
             return sentence
     if loose_source in loose_notes:
         for sentence in sentences:
             if loose_source in _loose(sentence):
+                trace.count("source_match_substring")
                 return sentence
     best, best_ratio = None, 0.0
     for sentence in sentences:
         ratio = difflib.SequenceMatcher(None, loose_source, _loose(sentence)).ratio()
         if ratio > best_ratio:
             best, best_ratio = sentence, ratio
+    trace.count("source_match_fuzzy" if best_ratio >= 0.8 else "source_rejected")
     return best if best_ratio >= 0.8 else None
 
 
 def _ask_model(notes: str, max_cards: int) -> list[dict]:
     client = Groq(api_key=GROQ_API_KEY, max_retries=6)
-    completion = client.chat.completions.create(
+    completion = traced_create(
+        client,
+        "cards:generate",
         model=MODEL,
         temperature=0,
         response_format={"type": "json_object"},
@@ -110,7 +117,7 @@ def _cards_for_chunk(chunk: str, max_cards: int) -> tuple[list[Flashcard], int]:
     loose_chunk = _loose(chunk)
     candidates: list[dict] = []
     cards: list[Flashcard] = []
-    for _ in range(2):  # one retry if nothing usable came back
+    for attempt in range(2):  # one retry if nothing usable came back
         candidates = _ask_model(chunk, max_cards)
         cards = []
         for item in candidates:
@@ -123,22 +130,41 @@ def _cards_for_chunk(chunk: str, max_cards: int) -> tuple[list[Flashcard], int]:
                 cards.append(Flashcard(question=card.question, answer=card.answer, source=source))
         if cards:
             break
+    trace.chunk_result(
+        attempts=attempt + 1,
+        sentence_units=len(sentences),
+        candidates=len(candidates),
+        kept=len(cards),
+        dropped=len(candidates) - len(cards),
+    )
     return cards, len(candidates) - len(cards)
 
 
 def generate_flashcards(notes: str, max_cards: int) -> FlashcardsResponse:
-    chunks = _split_chunks(notes)[:MAX_CHUNKS]
+    all_chunks = _split_chunks(notes)
+    chunks = all_chunks[:MAX_CHUNKS]
     per_chunk = max(2, math.ceil(max_cards / len(chunks)))
+    trace.meta(
+        chunk_chars=CHUNK_CHARS,
+        max_chunks=MAX_CHUNKS,
+        chunks_total=len(all_chunks),
+        chunks_used=len(chunks),
+        chars_not_used=sum(len(c) for c in all_chunks[MAX_CHUNKS:]),
+        cards_requested=max_cards,
+        cards_per_chunk_target=per_chunk,
+    )
 
-    def safe(chunk: str):
+    def safe(index: int, chunk: str):
         # A chunk that still fails after retries is skipped so the other chunks' cards aren't lost
-        try:
-            return _cards_for_chunk(chunk, per_chunk), None
-        except Exception as e:
-            return ([], 0), e
+        with trace.chunk_scope(index, chars=len(chunk)):
+            try:
+                return _cards_for_chunk(chunk, per_chunk), None
+            except Exception as e:
+                trace.chunk_result(error=type(e).__name__)
+                return ([], 0), e
 
     with ThreadPoolExecutor(max_workers=min(2, len(chunks))) as pool:
-        outcomes = list(pool.map(safe, chunks))
+        outcomes = trace.map_in_context(pool, safe, list(enumerate(chunks)))
     if all(err is not None for _, err in outcomes):
         raise outcomes[0][1]
     results = [r for r, _ in outcomes]
@@ -154,4 +180,10 @@ def generate_flashcards(notes: str, max_cards: int) -> FlashcardsResponse:
                 seen.add(key)
                 cards.append(card)
 
+    trace.meta(
+        cards_before_dedupe=sum(len(c) for c, _ in results),
+        cards_after_dedupe=len(cards),
+        cards_returned=len(cards[:max_cards]),
+        cards_dropped_no_source=dropped,
+    )
     return FlashcardsResponse(cards=cards[:max_cards], dropped=dropped)

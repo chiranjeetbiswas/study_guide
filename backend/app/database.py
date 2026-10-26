@@ -22,3 +22,7 @@ def init_indexes():
     db.cards.create_index([("user_id", ASCENDING), ("status", ASCENDING)])
     db.cards.create_index([("user_id", ASCENDING), ("status", ASCENDING), ("due_date", ASCENDING)])
     db.cards.create_index([("user_id", ASCENDING), ("check_status", ASCENDING)])
+    db.generation_runs.create_index([("user_id", ASCENDING), ("created_at", -1)])
+    db.generation_runs.create_index("set_id")
+    db.chunks.create_index([("document_id", ASCENDING), ("chunk_index", ASCENDING)], unique=True)
+    db.chunks.create_index("user_id")

@@ -6,11 +6,12 @@ from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
 from pydantic import BaseModel, Field
 from pymongo.database import Database
 
-from app import models
+from app import models, trace
+from app.chunk_store import build_quietly
 from app.ai import chat_json
 from app.auth import get_current_user
 from app.database import get_db
-from app.extract import MAX_UPLOAD_BYTES, ExtractError, extract_text
+from app.extract import MAX_UPLOAD_BYTES, ExtractError, extract_document
 from app.flashcards import MAX_NOTES_CHARS, _split_chunks
 from app.generate import GenerateResponse, generate_cards_for_note
 
@@ -155,7 +156,18 @@ def _audience(doc: dict) -> str:
     return "\n".join(parts)
 
 
-def _create(db: Database, user: dict, notes: str, title: str, subject: str, level: str) -> SetDetail:
+def _create(
+    db: Database,
+    user: dict,
+    notes: str,
+    title: str,
+    subject: str,
+    level: str,
+    *,
+    source_name: str = "pasted text",
+    source_type: str = "text",
+    pages: list[str] | None = None,
+) -> SetDetail:
     notes = notes.strip()
     if len(notes) < MIN_NOTES_CHARS:
         raise HTTPException(status_code=422, detail="Notes are too short. Add at least a couple of sentences.")
@@ -175,8 +187,13 @@ def _create(db: Database, user: dict, notes: str, title: str, subject: str, leve
         "revision": None,
         "quiz": None,
         "papers": [],
+        # Where the text came from, and the per-page text of PDFs (the chunker records page numbers from it)
+        "source_name": source_name,
+        "source_type": source_type,
+        "source_pages": [{"number": n, "text": t} for n, t in enumerate(pages, start=1)] if pages else None,
     }
     doc["_id"] = db.notes.insert_one(doc).inserted_id
+    build_quietly(db, doc)  # store this document's chunks (never blocks creation)
     return _detail(db, doc)
 
 
@@ -207,11 +224,15 @@ def create_set_from_file(
     data = file.file.read(MAX_UPLOAD_BYTES + 1)
     if len(data) > MAX_UPLOAD_BYTES:
         raise HTTPException(status_code=413, detail=f"File is too large (max {MAX_UPLOAD_BYTES // (1024 * 1024)} MB)")
+    filename = file.filename or ""
     try:
-        notes = extract_text(file.filename or "", data)
+        notes, pages = extract_document(filename, data)
     except ExtractError as e:
         raise HTTPException(status_code=422, detail=str(e))
-    return _create(db, user, notes, title, subject, level)
+    return _create(
+        db, user, notes, title, subject, level,
+        source_name=filename, source_type="pdf" if pages else "txt", pages=pages,
+    )
 
 
 @router.get("", response_model=list[SetOut])
@@ -235,6 +256,7 @@ def get_set(set_id: str, db: Database = Depends(get_db), user: dict = Depends(ge
 def delete_set(set_id: str, db: Database = Depends(get_db), user: dict = Depends(get_current_user)):
     doc = _get_set(db, set_id, user)
     db.cards.delete_many({"note_id": doc["_id"]})
+    db.chunks.delete_many({"document_id": doc["_id"]})
     db.notes.delete_one({"_id": doc["_id"]})
 
 
@@ -277,15 +299,30 @@ def _parse_topics(data: dict) -> list[dict]:
 
 
 def _revision_for_chunk(chunk: str, audience: str) -> list[dict]:
-    data = chat_json(REVISION_PROMPT, f"{audience}\n\nNOTES:\n{chunk}".strip(), max_tokens=8000)
-    return _parse_topics(data)
+    data = chat_json(REVISION_PROMPT, f"{audience}\n\nNOTES:\n{chunk}".strip(), max_tokens=8000, label="revision:chunk")
+    topics = _parse_topics(data)
+    trace.chunk_result(topics=len(topics))
+    return topics
 
 
 def _build_revision(db: Database, doc: dict) -> list[dict]:
-    chunks = _split_chunks(doc["text"], REVISION_CHUNK_CHARS)[:MAX_REVISION_CHUNKS]
+    all_chunks = _split_chunks(doc["text"], REVISION_CHUNK_CHARS)
+    chunks = all_chunks[:MAX_REVISION_CHUNKS]
     audience = _audience(doc)
+    trace.meta(
+        revision_chunk_chars=REVISION_CHUNK_CHARS,
+        revision_max_chunks=MAX_REVISION_CHUNKS,
+        chunks_total=len(all_chunks),
+        chunks_used=len(chunks),
+        chars_not_used=sum(len(c) for c in all_chunks[MAX_REVISION_CHUNKS:]),
+    )
+
+    def for_chunk(index: int, chunk: str):
+        with trace.chunk_scope(index, chars=len(chunk)):
+            return _revision_for_chunk(chunk, audience)
+
     with ThreadPoolExecutor(max_workers=min(2, len(chunks))) as pool:
-        results = list(pool.map(lambda c: _revision_for_chunk(c, audience), chunks))
+        results = trace.map_in_context(pool, for_chunk, list(enumerate(chunks)))
     topics, seen = [], set()
     for chunk_topics in results:
         for t in chunk_topics:
@@ -296,27 +333,41 @@ def _build_revision(db: Database, doc: dict) -> list[dict]:
     if not topics:
         raise HTTPException(status_code=422, detail="Couldn't build revision notes from this text. Try adding more detail.")
     db.notes.update_one({"_id": doc["_id"]}, {"$set": {"revision": topics}})
+    trace.meta(topics_total=len(topics), topics_before_title_dedupe=sum(len(r) for r in results))
     return topics
 
 
 @router.post("/{set_id}/revision", response_model=SetDetail)
 def make_revision(set_id: str, db: Database = Depends(get_db), user: dict = Depends(get_current_user)):
     doc = _get_set(db, set_id, user)
-    _build_revision(db, doc)
+    with trace.traced(db, user, "revision", doc["_id"], input_chars=len(doc["text"])):
+        _build_revision(db, doc)
     return _detail(db, _get_set(db, set_id, user))
 
 
 def _context(db: Database, doc: dict) -> str:
     """The material quiz and paper prompts work from: the notes themselves, or a summary when they are long."""
     if len(doc["text"]) <= DIRECT_CONTEXT_CHARS:
+        trace.meta(context_source="full_notes", context_chars=len(doc["text"]), direct_context_limit=DIRECT_CONTEXT_CHARS)
         return doc["text"]
+    had_revision = bool(doc.get("revision"))
     topics = doc.get("revision") or _build_revision(db, doc)
     lines = []
     for t in topics:
         lines.append(f"## {t['title']}")
         lines.extend(f"- {p}" for p in t["key_points"])
         lines.extend(f"- {x['term']}: {x['meaning']}" for x in t["terms"])
-    return "\n".join(lines)[:DIRECT_CONTEXT_CHARS * 2]
+    summary = "\n".join(lines)
+    context = summary[:DIRECT_CONTEXT_CHARS * 2]
+    trace.meta(
+        context_source="revision_summary",
+        revision_existed_before=had_revision,
+        direct_context_limit=DIRECT_CONTEXT_CHARS,
+        summary_chars=len(summary),
+        context_chars=len(context),
+        context_truncated_chars=len(summary) - len(context),
+    )
+    return context
 
 
 # ---------- quiz ----------
@@ -343,27 +394,30 @@ def make_quiz(
     set_id: str, body: QuizRequest, db: Database = Depends(get_db), user: dict = Depends(get_current_user)
 ):
     doc = _get_set(db, set_id, user)
-    context = _context(db, doc)
-    data = chat_json(
-        QUIZ_PROMPT,
-        f"{_audience(doc)}\n\nWrite {body.count} questions.\n\nMATERIAL:\n{context}".strip(),
-        max_tokens=8000,
-    )
-    questions = []
-    for q in data.get("questions", []):
-        if not isinstance(q, dict):
-            continue
-        options = _str_list(q.get("options"))
-        idx = q.get("answer_index")
-        if _s(q.get("question")) and len(options) == 4 and isinstance(idx, int) and 0 <= idx < 4:
-            questions.append(
-                {
-                    "question": _s(q.get("question")),
-                    "options": options,
-                    "answer_index": idx,
-                    "explanation": _s(q.get("explanation")),
-                }
-            )
+    with trace.traced(db, user, "quiz", doc["_id"], input_chars=len(doc["text"]), questions_requested=body.count):
+        context = _context(db, doc)
+        data = chat_json(
+            QUIZ_PROMPT,
+            f"{_audience(doc)}\n\nWrite {body.count} questions.\n\nMATERIAL:\n{context}".strip(),
+            max_tokens=8000,
+            label="quiz",
+        )
+        questions = []
+        for q in data.get("questions", []):
+            if not isinstance(q, dict):
+                continue
+            options = _str_list(q.get("options"))
+            idx = q.get("answer_index")
+            if _s(q.get("question")) and len(options) == 4 and isinstance(idx, int) and 0 <= idx < 4:
+                questions.append(
+                    {
+                        "question": _s(q.get("question")),
+                        "options": options,
+                        "answer_index": idx,
+                        "explanation": _s(q.get("explanation")),
+                    }
+                )
+        trace.meta(questions_valid=len(questions))
     if not questions:
         raise HTTPException(status_code=422, detail="Couldn't build quiz questions from this text. Try again.")
     db.notes.update_one({"_id": doc["_id"]}, {"$set": {"quiz": questions[: body.count]}})
@@ -438,29 +492,34 @@ def make_paper(
     set_id: str, body: PaperRequest, db: Database = Depends(get_db), user: dict = Depends(get_current_user)
 ):
     doc = _get_set(db, set_id, user)
-    context = _context(db, doc)
-    request_text = f"{_audience(doc)}\n\nTotal marks: {body.total_marks}"
-    if body.duration_minutes:
-        request_text += f"\nDuration: {body.duration_minutes} minutes (size the paper to fit)"
-    if body.details.strip():
-        request_text += f"\nExtra details from the user: {body.details.strip()}"
-    request_text += f"\n\nMATERIAL:\n{context}"
+    with trace.traced(
+        db, user, "paper", doc["_id"], input_chars=len(doc["text"]), total_marks=body.total_marks, details=body.details
+    ):
+        context = _context(db, doc)
+        request_text = f"{_audience(doc)}\n\nTotal marks: {body.total_marks}"
+        if body.duration_minutes:
+            request_text += f"\nDuration: {body.duration_minutes} minutes (size the paper to fit)"
+        if body.details.strip():
+            request_text += f"\nExtra details from the user: {body.details.strip()}"
+        request_text += f"\n\nMATERIAL:\n{context}"
 
-    paper = None
-    for attempt in range(2):
-        feedback = ""
+        paper = None
+        for attempt in range(2):
+            feedback = ""
+            if paper is not None:
+                feedback = (
+                    f"\n\nYour previous paper added up to {_marks_sum(paper)} marks but it must be exactly "
+                    f"{body.total_marks}. Fix the marks."
+                )
+            data = chat_json(PAPER_PROMPT, request_text + feedback, max_tokens=10000, label=f"paper:attempt{attempt + 1}")
+            candidate = _parse_paper(data, body)
+            if candidate is None:
+                continue
+            paper = candidate
+            if _marks_sum(paper) == body.total_marks:
+                break
         if paper is not None:
-            feedback = (
-                f"\n\nYour previous paper added up to {_marks_sum(paper)} marks but it must be exactly "
-                f"{body.total_marks}. Fix the marks."
-            )
-        data = chat_json(PAPER_PROMPT, request_text + feedback, max_tokens=10000)
-        candidate = _parse_paper(data, body)
-        if candidate is None:
-            continue
-        paper = candidate
-        if _marks_sum(paper) == body.total_marks:
-            break
+            trace.meta(marks_sum_before_fix=_marks_sum(paper), attempts=attempt + 1)
     if paper is None:
         raise HTTPException(status_code=422, detail="Couldn't build an exam paper from this text. Try again.")
 

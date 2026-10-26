@@ -66,8 +66,9 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
     },
   };
 
-  // Don't flash protected content (or the login form) while redirecting
-  if (!ready || (!user && !isPublic) || (user && isPublic)) return null;
+  // Don't flash protected content (or the login form) while redirecting.
+  // Public pages render immediately so they are part of the server render.
+  if (isPublic ? !!user : !ready || !user) return null;
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
