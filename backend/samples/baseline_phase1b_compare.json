@@ -1,0 +1,688 @@
+{
+  "document_chars": 10757,
+  "pages": 3,
+  "old_as_used_today": {
+    "chunk_size_setting": "6000",
+    "chunks": 2,
+    "chars_min_avg_max": [
+      4770,
+      5378,
+      5986
+    ],
+    "overlap": "none",
+    "ends_mid_sentence": "1/1",
+    "boundary_kinds": "0 paragraph / 1 line / 0 mid-line",
+    "headings_glued_into_text": 6,
+    "headings_stranded_at_chunk_end": 0,
+    "page_header_footer_lines_inside_chunks": 3,
+    "chunks_with_page_number": "0 (not stored)",
+    "chunks_with_heading_or_section": "0 (not stored)",
+    "structure": "124 newlines became spaces",
+    "chunk_rows": [
+      {
+        "index": 0,
+        "used": true,
+        "chars": 5986,
+        "over_size_limit": false,
+        "original_start": 0,
+        "original_end": 5986,
+        "original_lines": "1-70",
+        "pages": "1-2",
+        "located_in_original": true,
+        "break_after": "line_break",
+        "starts_mid_sentence": false,
+        "ends_mid_sentence": true,
+        "preview_start": "Chapter 6: Life Processes - Photosynthesis and Respiration 1. Introduction to Photosynthesis Photosynthesis is",
+        "preview_end": "breathing is the exchange of gases, while respiration is a chemical process that happens in every living cell,",
+        "original_preview_start": "Chapter 6: Life Processes - Photosynthesis and Respiration\n1. Introduction to Photosynthesis\nPhotosynthesis is",
+        "original_preview_end": "breathing is the exchange of gases, while respiration is a chemical process that happens in every living cell,",
+        "structure": {
+          "headings_in_span": [
+            "Chapter 6: Life Processes - Photosynthesis and Respiration",
+            "1. Introduction to Photosynthesis",
+            "1.1 Where photosynthesis happens",
+            "2. The Two Stages of Photosynthesis",
+            "Class 10 Biology - Chapter 6 Notes - Page 1",
+            "2.1 What happens to the glucose",
+            "3. Factors Affecting the Rate of Photosynthesis",
+            "4. Cellular Respiration"
+          ],
+          "heading_is_last_line_of_chunk": false,
+          "newlines_turned_into_spaces": 69,
+          "blank_lines_turned_into_spaces": 0,
+          "paragraph_blocks_in_span": 1,
+          "sentence_units_in_chunk": 68,
+          "headings_glued_into_a_sentence_unit": [
+            {
+              "heading": "Chapter 6: Life Processes - Photosynthesis and Respiration",
+              "unit_starts_with": "Chapter 6: Life Processes - Photosynthesis and Respiration 1."
+            },
+            {
+              "heading": "1.1 Where photosynthesis happens",
+              "unit_starts_with": "1.1 Where photosynthesis happens A typical leaf has an upper epidermis, a palisade layer, a spongy layer and a"
+            },
+            {
+              "heading": "Class 10 Biology - Chapter 6 Notes - Page 1",
+              "unit_starts_with": "Class 10 Biology - Chapter 6 Notes - Page 1 2.1 What happens to the glucose The glucose made in the leaf has s"
+            }
+          ]
+        }
+      },
+      {
+        "index": 1,
+        "used": true,
+        "chars": 4770,
+        "over_size_limit": false,
+        "original_start": 5987,
+        "original_end": 10757,
+        "original_lines": "71-126",
+        "pages": "2-3",
+        "located_in_original": true,
+        "break_after": null,
+        "starts_mid_sentence": true,
+        "ends_mid_sentence": true,
+        "preview_start": "all the time, day and night. The energy is not released as heat all at once. Instead, it is captured step by s",
+        "preview_end": "Why does a green plant give out carbon dioxide at night? [2 marks] Class 10 Biology - Chapter 6 Notes - Page 3",
+        "original_preview_start": "all the time, day and night. The energy is not released as heat all at once. Instead, it is captured step by s",
+        "original_preview_end": "Why does a green plant give out carbon dioxide at night? [2 marks]\nClass 10 Biology - Chapter 6 Notes - Page 3",
+        "structure": {
+          "headings_in_span": [
+            "4.1 Aerobic respiration",
+            "4.2 Anaerobic respiration",
+            "Class 10 Biology - Chapter 6 Notes - Page 2",
+            "5. Comparing Photosynthesis and Respiration",
+            "6. Experiments and Practical Skills",
+            "7. Revision Questions",
+            "6. Why does a green plant give out carbon dioxide at night? [2 marks]"
+          ],
+          "heading_is_last_line_of_chunk": false,
+          "newlines_turned_into_spaces": 55,
+          "blank_lines_turned_into_spaces": 0,
+          "paragraph_blocks_in_span": 1,
+          "sentence_units_in_chunk": 47,
+          "headings_glued_into_a_sentence_unit": [
+            {
+              "heading": "4.1 Aerobic respiration",
+              "unit_starts_with": "4.1 Aerobic respiration Aerobic respiration needs oxygen."
+            },
+            {
+              "heading": "4.2 Anaerobic respiration",
+              "unit_starts_with": "4.2 Anaerobic respiration When oxygen is not available, cells can still release a little energy by anaerobic r"
+            },
+            {
+              "heading": "Class 10 Biology - Chapter 6 Notes - Page 2",
+              "unit_starts_with": "Class 10 Biology - Chapter 6 Notes - Page 2 Anaerobic respiration releases only 2 molecules of ATP per glucose"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "old_at_new_size": {
+    "chunk_size_setting": "1200",
+    "chunks": 10,
+    "chars_min_avg_max": [
+      329,
+      1075,
+      1199
+    ],
+    "overlap": "none",
+    "ends_mid_sentence": "5/9",
+    "boundary_kinds": "0 paragraph / 7 line / 2 mid-line",
+    "headings_glued_into_text": 6,
+    "headings_stranded_at_chunk_end": 1,
+    "page_header_footer_lines_inside_chunks": 3,
+    "chunks_with_page_number": "0 (not stored)",
+    "chunks_with_heading_or_section": "0 (not stored)",
+    "structure": "118 newlines became spaces",
+    "chunk_rows": [
+      {
+        "index": 0,
+        "used": true,
+        "chars": 1199,
+        "over_size_limit": false,
+        "original_start": 0,
+        "original_end": 1199,
+        "original_lines": "1-13",
+        "pages": "1",
+        "located_in_original": true,
+        "break_after": "line_break",
+        "starts_mid_sentence": false,
+        "ends_mid_sentence": false,
+        "preview_start": "Chapter 6: Life Processes - Photosynthesis and Respiration 1. Introduction to Photosynthesis Photosynthesis is",
+        "preview_end": " revived the air after a candle had used it up. Later, Jan Ingenhousz found that this only worked in sunlight.",
+        "original_preview_start": "Chapter 6: Life Processes - Photosynthesis and Respiration\n1. Introduction to Photosynthesis\nPhotosynthesis is",
+        "original_preview_end": " revived the air after a candle had used it up. Later, Jan Ingenhousz found that\nthis only worked in sunlight.",
+        "structure": {
+          "headings_in_span": [
+            "Chapter 6: Life Processes - Photosynthesis and Respiration",
+            "1. Introduction to Photosynthesis"
+          ],
+          "heading_is_last_line_of_chunk": false,
+          "newlines_turned_into_spaces": 12,
+          "blank_lines_turned_into_spaces": 0,
+          "paragraph_blocks_in_span": 1,
+          "sentence_units_in_chunk": 13,
+          "headings_glued_into_a_sentence_unit": [
+            {
+              "heading": "Chapter 6: Life Processes - Photosynthesis and Respiration",
+              "unit_starts_with": "Chapter 6: Life Processes - Photosynthesis and Respiration 1."
+            }
+          ]
+        }
+      },
+      {
+        "index": 1,
+        "used": true,
+        "chars": 1196,
+        "over_size_limit": false,
+        "original_start": 1200,
+        "original_end": 2396,
+        "original_lines": "14-29",
+        "pages": "1",
+        "located_in_original": true,
+        "break_after": "same_line",
+        "starts_mid_sentence": false,
+        "ends_mid_sentence": false,
+        "preview_start": "1.1 Where photosynthesis happens A typical leaf has an upper epidermis, a palisade layer, a spongy layer and a",
+        "preview_end": "en ions, electrons and oxygen. This is called photolysis of water. The oxygen is released through the stomata.",
+        "original_preview_start": "1.1 Where photosynthesis happens\nA typical leaf has an upper epidermis, a palisade layer, a spongy layer and a",
+        "original_preview_end": "en ions, electrons and oxygen. This is called photolysis of water. The oxygen is\nreleased through the stomata.",
+        "structure": {
+          "headings_in_span": [
+            "1.1 Where photosynthesis happens",
+            "2. The Two Stages of Photosynthesis"
+          ],
+          "heading_is_last_line_of_chunk": false,
+          "newlines_turned_into_spaces": 15,
+          "blank_lines_turned_into_spaces": 0,
+          "paragraph_blocks_in_span": 1,
+          "sentence_units_in_chunk": 12,
+          "headings_glued_into_a_sentence_unit": [
+            {
+              "heading": "1.1 Where photosynthesis happens",
+              "unit_starts_with": "1.1 Where photosynthesis happens A typical leaf has an upper epidermis, a palisade layer, a spongy layer and a"
+            }
+          ]
+        }
+      },
+      {
+        "index": 2,
+        "used": true,
+        "chars": 1171,
+        "over_size_limit": false,
+        "original_start": 2397,
+        "original_end": 3568,
+        "original_lines": "29-43",
+        "pages": "1-2",
+        "located_in_original": true,
+        "break_after": "line_break",
+        "starts_mid_sentence": false,
+        "ends_mid_sentence": true,
+        "preview_start": "The energy captured is stored temporarily in two molecules, ATP and NADPH, which act as short-term energy carr",
+        "preview_end": "starch, or transported as sucrose. Class 10 Biology - Chapter 6 Notes - Page 1 2.1 What happens to the glucose",
+        "original_preview_start": "The energy captured is stored temporarily in two molecules, ATP and NADPH,\nwhich act as short-term energy carr",
+        "original_preview_end": "starch, or transported as sucrose.\nClass 10 Biology - Chapter 6 Notes - Page 1\n2.1 What happens to the glucose",
+        "structure": {
+          "headings_in_span": [
+            "Class 10 Biology - Chapter 6 Notes - Page 1",
+            "2.1 What happens to the glucose"
+          ],
+          "heading_is_last_line_of_chunk": true,
+          "newlines_turned_into_spaces": 14,
+          "blank_lines_turned_into_spaces": 0,
+          "paragraph_blocks_in_span": 1,
+          "sentence_units_in_chunk": 19,
+          "headings_glued_into_a_sentence_unit": [
+            {
+              "heading": "Class 10 Biology - Chapter 6 Notes - Page 1",
+              "unit_starts_with": "Class 10 Biology - Chapter 6 Notes - Page 1 2.1 What happens to the glucose"
+            }
+          ]
+        }
+      },
+      {
+        "index": 3,
+        "used": true,
+        "chars": 1189,
+        "over_size_limit": false,
+        "original_start": 3569,
+        "original_end": 4758,
+        "original_lines": "44-55",
+        "pages": "2",
+        "located_in_original": true,
+        "break_after": "line_break",
+        "starts_mid_sentence": false,
+        "ends_mid_sentence": false,
+        "preview_start": "The glucose made in the leaf has several possible fates. Some is used immediately in respiration to release en",
+        "preview_end": "ecomes limiting instead. Plotted on a graph, this gives a curve that rises steeply and then flattens (Fig. 2).",
+        "original_preview_start": "The glucose made in the leaf has several possible fates. Some is used immediately in respiration to release\nen",
+        "original_preview_end": "ecomes limiting instead.\nPlotted on a graph, this gives a curve that rises steeply and then flattens (Fig. 2).",
+        "structure": {
+          "headings_in_span": [
+            "3. Factors Affecting the Rate of Photosynthesis"
+          ],
+          "heading_is_last_line_of_chunk": false,
+          "newlines_turned_into_spaces": 11,
+          "blank_lines_turned_into_spaces": 0,
+          "paragraph_blocks_in_span": 1,
+          "sentence_units_in_chunk": 15,
+          "headings_glued_into_a_sentence_unit": []
+        }
+      },
+      {
+        "index": 4,
+        "used": true,
+        "chars": 1116,
+        "over_size_limit": false,
+        "original_start": 4759,
+        "original_end": 5875,
+        "original_lines": "56-69",
+        "pages": "2",
+        "located_in_original": true,
+        "break_after": "line_break",
+        "starts_mid_sentence": false,
+        "ends_mid_sentence": true,
+        "preview_start": "- Light intensity: more light increases the rate until another factor limits it - Carbon dioxide concentration",
+        "preview_end": " life activities such as movement, growth, active transport and keeping warm. It is not the same as breathing;",
+        "original_preview_start": "- Light intensity: more light increases the rate until another factor limits it\n- Carbon dioxide concentration",
+        "original_preview_end": " life\nactivities such as movement, growth, active transport and keeping warm. It is not the same as breathing;",
+        "structure": {
+          "headings_in_span": [
+            "4. Cellular Respiration"
+          ],
+          "heading_is_last_line_of_chunk": false,
+          "newlines_turned_into_spaces": 13,
+          "blank_lines_turned_into_spaces": 0,
+          "paragraph_blocks_in_span": 1,
+          "sentence_units_in_chunk": 10,
+          "headings_glued_into_a_sentence_unit": []
+        }
+      },
+      {
+        "index": 5,
+        "used": true,
+        "chars": 1112,
+        "over_size_limit": false,
+        "original_start": 5876,
+        "original_end": 6988,
+        "original_lines": "70-82",
+        "pages": "2",
+        "located_in_original": true,
+        "break_after": "line_break",
+        "starts_mid_sentence": true,
+        "ends_mid_sentence": true,
+        "preview_start": "breathing is the exchange of gases, while respiration is a chemical process that happens in every living cell,",
+        "preview_end": " When oxygen is not available, cells can still release a little energy by anaerobic respiration. In yeast, the",
+        "original_preview_start": "breathing is the exchange of gases, while respiration is a chemical process that happens in every living cell,",
+        "original_preview_end": "\nWhen oxygen is not available, cells can still release a little energy by anaerobic respiration. In yeast, the",
+        "structure": {
+          "headings_in_span": [
+            "4.1 Aerobic respiration",
+            "4.2 Anaerobic respiration"
+          ],
+          "heading_is_last_line_of_chunk": false,
+          "newlines_turned_into_spaces": 12,
+          "blank_lines_turned_into_spaces": 0,
+          "paragraph_blocks_in_span": 1,
+          "sentence_units_in_chunk": 11,
+          "headings_glued_into_a_sentence_unit": [
+            {
+              "heading": "4.1 Aerobic respiration",
+              "unit_starts_with": "4.1 Aerobic respiration Aerobic respiration needs oxygen."
+            },
+            {
+              "heading": "4.2 Anaerobic respiration",
+              "unit_starts_with": "4.2 Anaerobic respiration When oxygen is not available, cells can still release a little energy by anaerobic r"
+            }
+          ]
+        }
+      },
+      {
+        "index": 6,
+        "used": true,
+        "chars": 1184,
+        "over_size_limit": false,
+        "original_start": 6989,
+        "original_end": 8173,
+        "original_lines": "83-96",
+        "pages": "2-3",
+        "located_in_original": true,
+        "break_after": "line_break",
+        "starts_mid_sentence": true,
+        "ends_mid_sentence": true,
+        "preview_start": "pyruvate is converted to ethanol and carbon dioxide, which is called alcoholic fermentation and is used in bak",
+        "preview_end": "erent steps. - Photosynthesis happens only in cells with chloroplasts; respiration happens in all living cells",
+        "original_preview_start": "pyruvate is converted to ethanol and carbon dioxide, which is called alcoholic fermentation and is used in\nbak",
+        "original_preview_end": "erent steps.\n- Photosynthesis happens only in cells with chloroplasts; respiration happens in all living cells",
+        "structure": {
+          "headings_in_span": [
+            "Class 10 Biology - Chapter 6 Notes - Page 2",
+            "5. Comparing Photosynthesis and Respiration"
+          ],
+          "heading_is_last_line_of_chunk": false,
+          "newlines_turned_into_spaces": 13,
+          "blank_lines_turned_into_spaces": 0,
+          "paragraph_blocks_in_span": 1,
+          "sentence_units_in_chunk": 9,
+          "headings_glued_into_a_sentence_unit": [
+            {
+              "heading": "Class 10 Biology - Chapter 6 Notes - Page 2",
+              "unit_starts_with": "Class 10 Biology - Chapter 6 Notes - Page 2 Anaerobic respiration releases only 2 molecules of ATP per glucose"
+            }
+          ]
+        }
+      },
+      {
+        "index": 7,
+        "used": true,
+        "chars": 1142,
+        "over_size_limit": false,
+        "original_start": 8174,
+        "original_end": 9316,
+        "original_lines": "97-109",
+        "pages": "3",
+        "located_in_original": true,
+        "break_after": "line_break",
+        "starts_mid_sentence": false,
+        "ends_mid_sentence": true,
+        "preview_start": "- Photosynthesis needs light; respiration goes on in light and in darkness - Photosynthesis stores energy; res",
+        "preview_end": "is placed in sunlight for several hours. When tested with iodine, only the uncovered part turns blue-black. To",
+        "original_preview_start": "- Photosynthesis needs light; respiration goes on in light and in darkness\n- Photosynthesis stores energy; res",
+        "original_preview_end": "is\nplaced in sunlight for several hours. When tested with iodine, only the uncovered part turns blue-black. To",
+        "structure": {
+          "headings_in_span": [
+            "6. Experiments and Practical Skills"
+          ],
+          "heading_is_last_line_of_chunk": false,
+          "newlines_turned_into_spaces": 12,
+          "blank_lines_turned_into_spaces": 0,
+          "paragraph_blocks_in_span": 1,
+          "sentence_units_in_chunk": 9,
+          "headings_glued_into_a_sentence_unit": []
+        }
+      },
+      {
+        "index": 8,
+        "used": true,
+        "chars": 1110,
+        "over_size_limit": false,
+        "original_start": 9317,
+        "original_end": 10427,
+        "original_lines": "110-122",
+        "pages": "3",
+        "located_in_original": true,
+        "break_after": "same_line",
+        "starts_mid_sentence": true,
+        "ends_mid_sentence": false,
+        "preview_start": "show that carbon dioxide is necessary, one plant is placed in a sealed bell jar with a dish of potassium hydro",
+        "preview_end": " Explain why a plant kept in the dark for two days will not give a blue-black result with iodine. [3 marks] 4.",
+        "original_preview_start": "show that carbon dioxide is necessary, one plant is placed in a sealed bell jar with a dish of potassium\nhydro",
+        "original_preview_end": " Explain why a plant kept in the dark for two days will not give a blue-black result with iodine. [3 marks]\n4.",
+        "structure": {
+          "headings_in_span": [
+            "7. Revision Questions"
+          ],
+          "heading_is_last_line_of_chunk": false,
+          "newlines_turned_into_spaces": 12,
+          "blank_lines_turned_into_spaces": 0,
+          "paragraph_blocks_in_span": 1,
+          "sentence_units_in_chunk": 15,
+          "headings_glued_into_a_sentence_unit": []
+        }
+      },
+      {
+        "index": 9,
+        "used": true,
+        "chars": 329,
+        "over_size_limit": false,
+        "original_start": 10428,
+        "original_end": 10757,
+        "original_lines": "122-126",
+        "pages": "3",
+        "located_in_original": true,
+        "break_after": null,
+        "starts_mid_sentence": false,
+        "ends_mid_sentence": true,
+        "preview_start": "Compare aerobic and anaerobic respiration in terms of oxygen use, products and energy released. [5 marks] 5. E",
+        "preview_end": "Why does a green plant give out carbon dioxide at night? [2 marks] Class 10 Biology - Chapter 6 Notes - Page 3",
+        "original_preview_start": "Compare aerobic and anaerobic respiration in terms of oxygen use, products and energy released. [5\nmarks]\n5. E",
+        "original_preview_end": "Why does a green plant give out carbon dioxide at night? [2 marks]\nClass 10 Biology - Chapter 6 Notes - Page 3",
+        "structure": {
+          "headings_in_span": [
+            "6. Why does a green plant give out carbon dioxide at night? [2 marks]"
+          ],
+          "heading_is_last_line_of_chunk": false,
+          "newlines_turned_into_spaces": 4,
+          "blank_lines_turned_into_spaces": 0,
+          "paragraph_blocks_in_span": 1,
+          "sentence_units_in_chunk": 6,
+          "headings_glued_into_a_sentence_unit": []
+        }
+      }
+    ]
+  },
+  "new": {
+    "chunk_size_setting": "1200 (+200 overlap)",
+    "chunks": 12,
+    "chars_min_avg_max": [
+      548,
+      1004,
+      1341
+    ],
+    "new_text_chars_min_avg_max": [
+      473,
+      885,
+      1199
+    ],
+    "overlap": "avg 128 chars (12% of stored text)",
+    "ends_mid_sentence": "0/11",
+    "ends_at_sentence_punctuation": "8/11",
+    "boundary_kinds": "11 paragraph-or-block / 0 inside a paragraph (at a sentence end) / 0 inside a sentence",
+    "headings_glued_into_text": 0,
+    "headings_stranded_at_chunk_end": 0,
+    "page_header_footer_lines_inside_chunks": 0,
+    "chunks_with_page_number": "12/12",
+    "chunks_with_heading_or_section": "12/12",
+    "structure": "12 headings and 39 paragraphs/list items kept as separate blocks",
+    "non_space_chars_lost": 0,
+    "noise_removed": [
+      {
+        "example": "Class 10 Biology - Chapter 6 Notes - Page 1",
+        "times": 3
+      }
+    ],
+    "chunk_rows": [
+      {
+        "index": 0,
+        "chars": 1199,
+        "new_text_chars": 1199,
+        "overlap_chars": 0,
+        "pages": "1",
+        "section": "Chapter 6: Life Processes - Photosynthesis and Respiration",
+        "heading": "Chapter 6: Life Processes - Photosynthesis and Respiration",
+        "headings_inside": [
+          "Chapter 6: Life Processes - Photosynthesis and Respiration",
+          "1. Introduction to Photosynthesis"
+        ],
+        "end_kind": "block",
+        "preview_start": "Chapter 6: Life Processes - Photosynthesis and Respiration\n1. Introduction to Photosynthesis\nPhotosynthesis is",
+        "preview_end": " revived the air after a candle had used it up. Later, Jan Ingenhousz found that this only worked in sunlight.",
+        "overlap_text": ""
+      },
+      {
+        "index": 1,
+        "chars": 874,
+        "new_text_chars": 810,
+        "overlap_chars": 62,
+        "pages": "1",
+        "section": "1. Introduction to Photosynthesis",
+        "heading": "1.1 Where photosynthesis happens",
+        "headings_inside": [
+          "1.1 Where photosynthesis happens"
+        ],
+        "end_kind": "block",
+        "preview_start": "Later, Jan Ingenhousz found that this only worked in sunlight.\n\n1.1 Where photosynthesis happens\nA typical lea",
+        "preview_end": "xchange\n- Xylem: carries water and minerals upwards\n- Phloem: carries food (sucrose) to all parts of the plant",
+        "overlap_text": "Later, Jan Ingenhousz found that this only worked in sunlight."
+      },
+      {
+        "index": 2,
+        "chars": 1341,
+        "new_text_chars": 1142,
+        "overlap_chars": 197,
+        "pages": "1",
+        "section": "2. The Two Stages of Photosynthesis",
+        "heading": "2. The Two Stages of Photosynthesis",
+        "headings_inside": [
+          "2. The Two Stages of Photosynthesis"
+        ],
+        "end_kind": "block",
+        "preview_start": "- Chlorophyll: the green pigment that absorbs light\n- Stomata: pores that control gas exchange\n- Xylem: carrie",
+        "preview_end": "2 must enter the cycle to make one three-carbon sugar, and six turns are needed to build one glucose molecule.",
+        "overlap_text": "- Chlorophyll: the green pigment that absorbs light\n- Stomata: pores that control gas exchange\n- Xylem: carries water and minerals upwards\n- Phloem: carries food (sucrose) to all parts of the plant"
+      },
+      {
+        "index": 3,
+        "chars": 1127,
+        "new_text_chars": 990,
+        "overlap_chars": 135,
+        "pages": "1-2",
+        "section": "2. The Two Stages of Photosynthesis",
+        "heading": "2. The Two Stages of Photosynthesis",
+        "headings_inside": [
+          "2.1 What happens to the glucose"
+        ],
+        "end_kind": "block",
+        "preview_start": "Approx. 3 molecules of CO2 must enter the cycle to make one three-carbon sugar, and six turns are needed to bu",
+        "preview_end": "eaf is boiled in water and then in alcohol to remove the chlorophyll so the colour change can be seen clearly.",
+        "overlap_text": "Approx. 3 molecules of CO2 must enter the cycle to make one three-carbon sugar, and six turns are needed to build one glucose molecule."
+      },
+      {
+        "index": 4,
+        "chars": 1115,
+        "new_text_chars": 982,
+        "overlap_chars": 131,
+        "pages": "2",
+        "section": "3. Factors Affecting the Rate of Photosynthesis",
+        "heading": "3. Factors Affecting the Rate of Photosynthesis",
+        "headings_inside": [
+          "3. Factors Affecting the Rate of Photosynthesis"
+        ],
+        "end_kind": "block",
+        "preview_start": "Before testing, the leaf is boiled in water and then in alcohol to remove the chlorophyll so the colour change",
+        "preview_end": " denature and the rate falls sharply\n- Water supply: severe shortage closes the stomata and stops CO2 entering",
+        "overlap_text": "Before testing, the leaf is boiled in water and then in alcohol to remove the chlorophyll so the colour change can be seen clearly."
+      },
+      {
+        "index": 5,
+        "chars": 548,
+        "new_text_chars": 473,
+        "overlap_chars": 73,
+        "pages": "2",
+        "section": "3. Factors Affecting the Rate of Photosynthesis",
+        "heading": "3. Factors Affecting the Rate of Photosynthesis",
+        "headings_inside": [],
+        "end_kind": "block",
+        "preview_start": "- Water supply: severe shortage closes the stomata and stops CO2 entering\n\n- Chlorophyll amount: leaves with l",
+        "preview_end": "ust be weighed against the extra crop, which is why growers only add the factor that is limiting at that time.",
+        "overlap_text": "- Water supply: severe shortage closes the stomata and stops CO2 entering"
+      },
+      {
+        "index": 6,
+        "chars": 758,
+        "new_text_chars": 603,
+        "overlap_chars": 153,
+        "pages": "2",
+        "section": "4. Cellular Respiration",
+        "heading": "4. Cellular Respiration",
+        "headings_inside": [
+          "4. Cellular Respiration"
+        ],
+        "end_kind": "block",
+        "preview_start": "However, the cost of heating and lighting must be weighed against the extra crop, which is why growers only ad",
+        "preview_end": "lls can use wherever energy is needed. Each molecule of ATP can be thought of as a small rechargeable battery.",
+        "overlap_text": "However, the cost of heating and lighting must be weighed against the extra crop, which is why growers only add the factor that is limiting at that time."
+      },
+      {
+        "index": 7,
+        "chars": 1138,
+        "new_text_chars": 955,
+        "overlap_chars": 181,
+        "pages": "2",
+        "section": "4. Cellular Respiration",
+        "heading": "4.1 Aerobic respiration",
+        "headings_inside": [
+          "4.1 Aerobic respiration",
+          "4.2 Anaerobic respiration"
+        ],
+        "end_kind": "block",
+        "preview_start": "Instead, it is captured step by step in a molecule called ATP, which cells can use wherever energy is needed. ",
+        "preview_end": "ed in baking and brewing. In our muscle cells during very hard exercise, pyruvate is converted to lactic acid.",
+        "overlap_text": "Instead, it is captured step by step in a molecule called ATP, which cells can use wherever energy is needed. Each molecule of ATP can be thought of as a small rechargeable battery."
+      },
+      {
+        "index": 8,
+        "chars": 1251,
+        "new_text_chars": 1165,
+        "overlap_chars": 84,
+        "pages": "3",
+        "section": "4. Cellular Respiration",
+        "heading": "4.2 Anaerobic respiration",
+        "headings_inside": [
+          "5. Comparing Photosynthesis and Respiration"
+        ],
+        "end_kind": "block",
+        "preview_start": "In our muscle cells during very hard exercise, pyruvate is converted to lactic acid.\n\nAnaerobic respiration re",
+        "preview_end": "ses energy\n- Photosynthesis takes in CO2 and gives out O2; respiration takes in O2 and gives out CO2 (aerobic)",
+        "overlap_text": "In our muscle cells during very hard exercise, pyruvate is converted to lactic acid."
+      },
+      {
+        "index": 9,
+        "chars": 706,
+        "new_text_chars": 545,
+        "overlap_chars": 159,
+        "pages": "3",
+        "section": "5. Comparing Photosynthesis and Respiration",
+        "heading": "5. Comparing Photosynthesis and Respiration",
+        "headings_inside": [],
+        "end_kind": "block",
+        "preview_start": "- Photosynthesis stores energy; respiration releases energy\n- Photosynthesis takes in CO2 and gives out O2; re",
+        "preview_end": "o net exchange of gases. Plants growing in deep shade have a lower compensation point than plants in full sun.",
+        "overlap_text": "- Photosynthesis stores energy; respiration releases energy\n- Photosynthesis takes in CO2 and gives out O2; respiration takes in O2 and gives out CO2 (aerobic)"
+      },
+      {
+        "index": 10,
+        "chars": 1250,
+        "new_text_chars": 1163,
+        "overlap_chars": 85,
+        "pages": "3",
+        "section": "6. Experiments and Practical Skills",
+        "heading": "6. Experiments and Practical Skills",
+        "headings_inside": [
+          "6. Experiments and Practical Skills"
+        ],
+        "end_kind": "block",
+        "preview_start": "Plants growing in deep shade have a lower compensation point than plants in full sun.\n\n6. Experiments and Prac",
+        "preview_end": "kes the test fair. Examiners frequently award marks for stating what was kept constant, so do not forget this.",
+        "overlap_text": "Plants growing in deep shade have a lower compensation point than plants in full sun."
+      },
+      {
+        "index": 11,
+        "chars": 746,
+        "new_text_chars": 595,
+        "overlap_chars": 149,
+        "pages": "3",
+        "section": "7. Revision Questions",
+        "heading": "7. Revision Questions",
+        "headings_inside": [
+          "7. Revision Questions"
+        ],
+        "end_kind": "block",
+        "preview_start": "Keeping all other variables the same makes the test fair. Examiners frequently award marks for stating what wa",
+        "preview_end": "intensity can become limiting. [4 marks]\n6. Why does a green plant give out carbon dioxide at night? [2 marks]",
+        "overlap_text": "Keeping all other variables the same makes the test fair. Examiners frequently award marks for stating what was kept constant, so do not forget this."
+      }
+    ]
+  }
+}

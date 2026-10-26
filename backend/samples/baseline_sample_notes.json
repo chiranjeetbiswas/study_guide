@@ -1,0 +1,288 @@
+{
+  "document": {
+    "name": "sample_notes.pdf",
+    "chars": 10757,
+    "lines": 126,
+    "pages": 3,
+    "page_info": "available (recomputed from the uploaded PDF)",
+    "note_char_limit": 200000
+  },
+  "quiz_and_paper_context": {
+    "direct_context_limit": 24000,
+    "source": "full notes"
+  },
+  "sentence_units": {
+    "what": "pieces produced by _split_sentences(): split after . ! ? plus whitespace, AND at every newline",
+    "count": 214,
+    "chars_min": 2,
+    "chars_avg": 49,
+    "chars_max": 113,
+    "short_under_25_chars": 59,
+    "short_examples": [
+      {
+        "unit": 1,
+        "text": "1."
+      },
+      {
+        "unit": 6,
+        "text": "called chloroplasts."
+      },
+      {
+        "unit": 10,
+        "text": "us."
+      },
+      {
+        "unit": 13,
+        "text": "oxygen."
+      },
+      {
+        "unit": 17,
+        "text": "Dr."
+      },
+      {
+        "unit": 19,
+        "text": "burned out, e.g."
+      },
+      {
+        "unit": 25,
+        "text": "The palisade"
+      },
+      {
+        "unit": 27,
+        "text": "1)."
+      }
+    ],
+    "not_ending_like_a_sentence": 101,
+    "lines_total": 126,
+    "long_lines_without_end_punctuation": 77,
+    "looks_like_hard_wrapped_text": true
+  },
+  "headings_heuristic": [
+    "Chapter 6: Life Processes - Photosynthesis and Respiration",
+    "1. Introduction to Photosynthesis",
+    "1.1 Where photosynthesis happens",
+    "2. The Two Stages of Photosynthesis",
+    "Class 10 Biology - Chapter 6 Notes - Page 1",
+    "2.1 What happens to the glucose",
+    "3. Factors Affecting the Rate of Photosynthesis",
+    "4. Cellular Respiration",
+    "4.1 Aerobic respiration",
+    "4.2 Anaerobic respiration",
+    "Class 10 Biology - Chapter 6 Notes - Page 2",
+    "5. Comparing Photosynthesis and Respiration",
+    "6. Experiments and Practical Skills",
+    "7. Revision Questions",
+    "6. Why does a green plant give out carbon dioxide at night? [2 marks]"
+  ],
+  "profiles": {
+    "flashcards": {
+      "chunk_chars": 6000,
+      "overlap_chars": 0,
+      "max_chunks_used_per_generation": 20,
+      "used_by": "flashcard generation, one Groq call per chunk",
+      "chunk_count": 2,
+      "chunks_used": 2,
+      "chars_in_unused_chunks": 0,
+      "chunk_chars_min": 4770,
+      "chunk_chars_avg": 5378,
+      "chunk_chars_max": 5986,
+      "summary": {
+        "boundaries_between_chunks": {
+          "paragraph_break": 0,
+          "line_break": 1,
+          "same_line": 0
+        },
+        "cuts_that_end_mid_sentence": 1,
+        "headings_found": 15,
+        "headings_left_as_last_line_of_a_chunk": 0,
+        "headings_glued_into_a_sentence_unit": 6,
+        "newlines_turned_into_spaces": 124,
+        "blank_lines_turned_into_spaces": 0,
+        "non_space_chars_lost": 0
+      },
+      "chunks": [
+        {
+          "index": 0,
+          "used": true,
+          "chars": 5986,
+          "over_size_limit": false,
+          "original_start": 0,
+          "original_end": 5986,
+          "original_lines": "1-70",
+          "pages": "1-2",
+          "located_in_original": true,
+          "break_after": "line_break",
+          "starts_mid_sentence": false,
+          "ends_mid_sentence": true,
+          "preview_start": "Chapter 6: Life Processes - Photosynthesis and Respiration 1. Introduction to Photosynthesis Photosynthesis is the process by which green plants, alga",
+          "preview_end": " warm. It is not the same as breathing; breathing is the exchange of gases, while respiration is a chemical process that happens in every living cell,",
+          "original_preview_start": "Chapter 6: Life Processes - Photosynthesis and Respiration\n1. Introduction to Photosynthesis\nPhotosynthesis is the process by which green plants, alga",
+          "original_preview_end": " warm. It is not the same as breathing;\nbreathing is the exchange of gases, while respiration is a chemical process that happens in every living cell,",
+          "structure": {
+            "headings_in_span": [
+              "Chapter 6: Life Processes - Photosynthesis and Respiration",
+              "1. Introduction to Photosynthesis",
+              "1.1 Where photosynthesis happens",
+              "2. The Two Stages of Photosynthesis",
+              "Class 10 Biology - Chapter 6 Notes - Page 1",
+              "2.1 What happens to the glucose",
+              "3. Factors Affecting the Rate of Photosynthesis",
+              "4. Cellular Respiration"
+            ],
+            "heading_is_last_line_of_chunk": false,
+            "newlines_turned_into_spaces": 69,
+            "blank_lines_turned_into_spaces": 0,
+            "paragraph_blocks_in_span": 1,
+            "sentence_units_in_chunk": 68,
+            "headings_glued_into_a_sentence_unit": [
+              {
+                "heading": "Chapter 6: Life Processes - Photosynthesis and Respiration",
+                "unit_starts_with": "Chapter 6: Life Processes - Photosynthesis and Respiration 1."
+              },
+              {
+                "heading": "1.1 Where photosynthesis happens",
+                "unit_starts_with": "1.1 Where photosynthesis happens A typical leaf has an upper epidermis, a palisade layer, a spongy layer and a lower epidermis."
+              },
+              {
+                "heading": "Class 10 Biology - Chapter 6 Notes - Page 1",
+                "unit_starts_with": "Class 10 Biology - Chapter 6 Notes - Page 1 2.1 What happens to the glucose The glucose made in the leaf has several possible fates."
+              }
+            ]
+          }
+        },
+        {
+          "index": 1,
+          "used": true,
+          "chars": 4770,
+          "over_size_limit": false,
+          "original_start": 5987,
+          "original_end": 10757,
+          "original_lines": "71-126",
+          "pages": "2-3",
+          "located_in_original": true,
+          "break_after": null,
+          "starts_mid_sentence": true,
+          "ends_mid_sentence": true,
+          "preview_start": "all the time, day and night. The energy is not released as heat all at once. Instead, it is captured step by step in a molecule called ATP, which cell",
+          "preview_end": "nsity can become limiting. [4 marks] 6. Why does a green plant give out carbon dioxide at night? [2 marks] Class 10 Biology - Chapter 6 Notes - Page 3",
+          "original_preview_start": "all the time, day and night. The energy is not released as heat all at once. Instead, it is captured step by step\nin a molecule called ATP, which cell",
+          "original_preview_end": "nsity can become limiting. [4 marks]\n6. Why does a green plant give out carbon dioxide at night? [2 marks]\nClass 10 Biology - Chapter 6 Notes - Page 3",
+          "structure": {
+            "headings_in_span": [
+              "4.1 Aerobic respiration",
+              "4.2 Anaerobic respiration",
+              "Class 10 Biology - Chapter 6 Notes - Page 2",
+              "5. Comparing Photosynthesis and Respiration",
+              "6. Experiments and Practical Skills",
+              "7. Revision Questions",
+              "6. Why does a green plant give out carbon dioxide at night? [2 marks]"
+            ],
+            "heading_is_last_line_of_chunk": false,
+            "newlines_turned_into_spaces": 55,
+            "blank_lines_turned_into_spaces": 0,
+            "paragraph_blocks_in_span": 1,
+            "sentence_units_in_chunk": 47,
+            "headings_glued_into_a_sentence_unit": [
+              {
+                "heading": "4.1 Aerobic respiration",
+                "unit_starts_with": "4.1 Aerobic respiration Aerobic respiration needs oxygen."
+              },
+              {
+                "heading": "4.2 Anaerobic respiration",
+                "unit_starts_with": "4.2 Anaerobic respiration When oxygen is not available, cells can still release a little energy by anaerobic respiration."
+              },
+              {
+                "heading": "Class 10 Biology - Chapter 6 Notes - Page 2",
+                "unit_starts_with": "Class 10 Biology - Chapter 6 Notes - Page 2 Anaerobic respiration releases only 2 molecules of ATP per glucose, far less than aerobic respiration, whi"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "revision": {
+      "chunk_chars": 12000,
+      "overlap_chars": 0,
+      "max_chunks_used_per_generation": 15,
+      "used_by": "revision notes, one Groq call per chunk",
+      "chunk_count": 1,
+      "chunks_used": 1,
+      "chars_in_unused_chunks": 0,
+      "chunk_chars_min": 10757,
+      "chunk_chars_avg": 10757,
+      "chunk_chars_max": 10757,
+      "summary": {
+        "boundaries_between_chunks": {
+          "paragraph_break": 0,
+          "line_break": 0,
+          "same_line": 0
+        },
+        "cuts_that_end_mid_sentence": 0,
+        "headings_found": 15,
+        "headings_left_as_last_line_of_a_chunk": 0,
+        "headings_glued_into_a_sentence_unit": 6,
+        "newlines_turned_into_spaces": 125,
+        "blank_lines_turned_into_spaces": 0,
+        "non_space_chars_lost": 0
+      },
+      "chunks": [
+        {
+          "index": 0,
+          "used": true,
+          "chars": 10757,
+          "over_size_limit": false,
+          "original_start": 0,
+          "original_end": 10757,
+          "original_lines": "1-126",
+          "pages": "1-3",
+          "located_in_original": true,
+          "break_after": null,
+          "starts_mid_sentence": false,
+          "ends_mid_sentence": true,
+          "preview_start": "Chapter 6: Life Processes - Photosynthesis and Respiration 1. Introduction to Photosynthesis Photosynthesis is the process by which green plants, alga",
+          "preview_end": "nsity can become limiting. [4 marks] 6. Why does a green plant give out carbon dioxide at night? [2 marks] Class 10 Biology - Chapter 6 Notes - Page 3",
+          "original_preview_start": "Chapter 6: Life Processes - Photosynthesis and Respiration\n1. Introduction to Photosynthesis\nPhotosynthesis is the process by which green plants, alga",
+          "original_preview_end": "nsity can become limiting. [4 marks]\n6. Why does a green plant give out carbon dioxide at night? [2 marks]\nClass 10 Biology - Chapter 6 Notes - Page 3",
+          "structure": {
+            "headings_in_span": [
+              "Chapter 6: Life Processes - Photosynthesis and Respiration",
+              "1. Introduction to Photosynthesis",
+              "1.1 Where photosynthesis happens",
+              "2. The Two Stages of Photosynthesis",
+              "Class 10 Biology - Chapter 6 Notes - Page 1",
+              "2.1 What happens to the glucose",
+              "3. Factors Affecting the Rate of Photosynthesis",
+              "4. Cellular Respiration",
+              "4.1 Aerobic respiration",
+              "4.2 Anaerobic respiration",
+              "Class 10 Biology - Chapter 6 Notes - Page 2",
+              "5. Comparing Photosynthesis and Respiration",
+              "6. Experiments and Practical Skills",
+              "7. Revision Questions",
+              "6. Why does a green plant give out carbon dioxide at night? [2 marks]"
+            ],
+            "heading_is_last_line_of_chunk": false,
+            "newlines_turned_into_spaces": 125,
+            "blank_lines_turned_into_spaces": 0,
+            "paragraph_blocks_in_span": 1,
+            "sentence_units_in_chunk": 114,
+            "headings_glued_into_a_sentence_unit": [
+              {
+                "heading": "Chapter 6: Life Processes - Photosynthesis and Respiration",
+                "unit_starts_with": "Chapter 6: Life Processes - Photosynthesis and Respiration 1."
+              },
+              {
+                "heading": "1.1 Where photosynthesis happens",
+                "unit_starts_with": "1.1 Where photosynthesis happens A typical leaf has an upper epidermis, a palisade layer, a spongy layer and a lower epidermis."
+              },
+              {
+                "heading": "Class 10 Biology - Chapter 6 Notes - Page 1",
+                "unit_starts_with": "Class 10 Biology - Chapter 6 Notes - Page 1 2.1 What happens to the glucose The glucose made in the leaf has several possible fates."
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}
