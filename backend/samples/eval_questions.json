@@ -1,6 +1,14 @@
 {
   "document": "sample_notes.pdf",
   "about": "Each question has an answer_contains phrase copied from the notes. A retrieval counts as a hit when one of the returned chunks contains that phrase. kind: 'paraphrase' = the question shares few words with the answer, 'exact' = it asks about a specific name, number, term or formula.",
+  "unanswerable": [
+    "How many chambers does the human heart have?",
+    "What is the function of the kidney?",
+    "How does DNA replicate?",
+    "What is the capital of France?",
+    "Who wrote the play Hamlet?",
+    "When did the Second World War end?"
+  ],
   "questions": [
     {"q": "Why do leaves look green to us?", "answer_contains": "Green light is reflected", "kind": "paraphrase"},
     {"q": "Which gas is given off when a plant makes its food?", "answer_contains": "oxygen is released as a by-product", "kind": "paraphrase"},

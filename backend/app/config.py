@@ -7,6 +7,10 @@ load_dotenv()
 
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 
+# Model for the fact-checking reviewer (verify.py). Unset: the same model that writes the answers. A different model is a
+# more independent second opinion, and Groq counts the rate limit per model, so the load is split between the two.
+REVIEW_MODEL = os.getenv("REVIEW_MODEL") or None
+
 # e.g. mongodb://localhost:27017 or mongodb+srv://user:password@cluster.mongodb.net
 MONGODB_URL = os.getenv("MONGODB_URL", "mongodb://localhost:27017")
 MONGODB_DB = os.getenv("MONGODB_DB", "study_guide")

@@ -31,6 +31,7 @@ from pymongo.database import Database
 from app import trace
 from app.ai import chat_json
 from app.auth import get_current_user
+from app.config import REVIEW_MODEL
 from app.chunk_store import build_and_store, embed_quietly
 from app.database import get_db
 from app.embeddings import EMBED_MODEL
@@ -190,6 +191,7 @@ def _review(sources_text: str, question: str, draft: Draft) -> Review | None:
         f"SOURCES:\n{sources_text}\n\nQUESTION:\n{question}\n\nANSWER:\n{draft.answer}",
         max_tokens=800,
         label="ask:review",
+        model=REVIEW_MODEL,
     )
     return parse_review(data)
 

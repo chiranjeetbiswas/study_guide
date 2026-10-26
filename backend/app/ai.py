@@ -8,8 +8,9 @@ from app.flashcards import MODEL
 from app.trace import traced_create
 
 
-def chat_json(system: str, user: str, *, max_tokens: int = 8000, label: str = "chat") -> dict:
-    """One Groq call that must answer with a JSON object. Raises HTTP 502 if the call or the JSON fails."""
+def chat_json(system: str, user: str, *, max_tokens: int = 8000, label: str = "chat", model: str | None = None) -> dict:
+    """One Groq call that must answer with a JSON object. Raises HTTP 502 if the call or the JSON fails.
+    `model` picks another model than the default (Groq limits each model separately)."""
     if not GROQ_API_KEY or GROQ_API_KEY.startswith(("paste-", "your-")):
         raise HTTPException(status_code=500, detail="GROQ_API_KEY is not set in backend/.env")
     try:
@@ -17,7 +18,7 @@ def chat_json(system: str, user: str, *, max_tokens: int = 8000, label: str = "c
         completion = traced_create(
             client,
             label,
-            model=MODEL,
+            model=model or MODEL,
             temperature=0.2,
             max_completion_tokens=max_tokens,
             reasoning_effort="low",
