@@ -89,9 +89,17 @@ export type AskSource = {
   heading: string | null;
   snippet: string;
   text: string;
-  score: number;
+  score: number | null; // cosine similarity, null in keyword mode
 };
-export type AskResult = { found: boolean; answer: string; sources: AskSource[] };
+export type SearchMode = "hybrid" | "vector" | "keyword";
+export type AskTurn = { question: string; answer: string };
+export type AskResult = {
+  search_query: string; // what was searched: the question, or its standalone rewrite after a follow-up
+  mode: SearchMode;
+  found: boolean;
+  answer: string;
+  sources: AskSource[];
+};
 
 export type SetDetails ={ title: string; subject: string; level: string };
 
@@ -201,8 +209,8 @@ export const api = {
   deletePaper: (id: string, paperId: string) => request<StudySet>(`/sets/${id}/paper/${paperId}`, { method: "DELETE" }),
   makeSetFlashcards: (id: string, maxCards: number) =>
     request<GenerateResult>(`/sets/${id}/flashcards`, { method: "POST", body: JSON.stringify({ max_cards: maxCards }) }),
-  askSet: (id: string, question: string) =>
-    request<AskResult>(`/sets/${id}/ask`, { method: "POST", body: JSON.stringify({ question }) }),
+  askSet: (id: string, question: string, history: AskTurn[] = [], mode: SearchMode = "hybrid") =>
+    request<AskResult>(`/sets/${id}/ask`, { method: "POST", body: JSON.stringify({ question, history, mode }) }),
   listCards: (status: CardStatus) => request<Card[]>(`/cards?status=${status}`),
   checkStats: () => request<CheckStats>("/stats/checks"),
   dueCards: () => request<Card[]>("/quiz/due"),

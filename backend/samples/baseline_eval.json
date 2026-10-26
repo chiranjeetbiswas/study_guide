@@ -1,0 +1,113 @@
+{
+  "document": "sample_notes.pdf",
+  "embedding_model": "BAAI/bge-small-en-v1.5",
+  "chunk_size": 1200,
+  "chunk_overlap": 200,
+  "chunks": 12,
+  "modes": {
+    "hybrid": {
+      "overall": {
+        "hit@1": 0.824,
+        "hit@3": 0.971,
+        "hit@5": 1.0,
+        "mrr": 0.904,
+        "questions": 34
+      },
+      "by_kind": {
+        "exact": {
+          "hit@1": 0.7,
+          "hit@3": 1.0,
+          "hit@5": 1.0,
+          "mrr": 0.85,
+          "questions": 10
+        },
+        "paraphrase": {
+          "hit@1": 0.875,
+          "hit@3": 1.0,
+          "hit@5": 1.0,
+          "mrr": 0.938,
+          "questions": 16
+        },
+        "synonym": {
+          "hit@1": 0.875,
+          "hit@3": 0.875,
+          "hit@5": 1.0,
+          "mrr": 0.906,
+          "questions": 8
+        }
+      },
+      "misses": []
+    },
+    "vector": {
+      "overall": {
+        "hit@1": 0.647,
+        "hit@3": 0.912,
+        "hit@5": 0.971,
+        "mrr": 0.779,
+        "questions": 34
+      },
+      "by_kind": {
+        "exact": {
+          "hit@1": 0.5,
+          "hit@3": 0.7,
+          "hit@5": 0.9,
+          "mrr": 0.65,
+          "questions": 10
+        },
+        "paraphrase": {
+          "hit@1": 0.688,
+          "hit@3": 1.0,
+          "hit@5": 1.0,
+          "mrr": 0.823,
+          "questions": 16
+        },
+        "synonym": {
+          "hit@1": 0.75,
+          "hit@3": 1.0,
+          "hit@5": 1.0,
+          "mrr": 0.854,
+          "questions": 8
+        }
+      },
+      "misses": [
+        "What did Priestley show in 1771?"
+      ]
+    },
+    "keyword": {
+      "overall": {
+        "hit@1": 0.765,
+        "hit@3": 0.912,
+        "hit@5": 0.941,
+        "mrr": 0.836,
+        "questions": 34
+      },
+      "by_kind": {
+        "exact": {
+          "hit@1": 0.9,
+          "hit@3": 1.0,
+          "hit@5": 1.0,
+          "mrr": 0.95,
+          "questions": 10
+        },
+        "paraphrase": {
+          "hit@1": 0.812,
+          "hit@3": 0.938,
+          "hit@5": 1.0,
+          "mrr": 0.88,
+          "questions": 16
+        },
+        "synonym": {
+          "hit@1": 0.5,
+          "hit@3": 0.75,
+          "hit@5": 0.75,
+          "mrr": 0.604,
+          "questions": 8
+        }
+      },
+      "misses": [
+        "What gives vegetation its colour?",
+        "Why can't athletes sprint forever?"
+      ]
+    }
+  }
+}

@@ -4,7 +4,8 @@
   POST /sets/{id}/chunks/rebuild    rebuild them, optionally with a different size / overlap (for experiments)
 
   POST /sets/{id}/chunks/embed      (re)compute the embeddings of the stored chunks (Phase 2)
-  GET  /sets/{id}/chunks/search     the chunks closest in meaning to a question (Phase 2, to check the embeddings)
+  GET  /sets/{id}/chunks/search     the best chunks for a question: mode=hybrid (default), vector or keyword
+                                    (to check the embeddings and compare the search methods)
 
 Rebuilding only replaces this set's chunks. It does not touch flashcards, revision notes, quizzes or papers.
 """
@@ -18,7 +19,7 @@ from pymongo.database import Database
 from app.auth import get_current_user
 from app.chunk_store import build_and_store, embed_quietly
 from app.database import get_db
-from app.embeddings import search_chunks
+from app.retrieval import Mode, search as search_hits
 from app.studyset import _get_set
 
 router = APIRouter(prefix="/sets/{set_id}/chunks", tags=["chunks"])
@@ -60,7 +61,8 @@ class ChunksResponse(BaseModel):
 
 
 class SearchHit(BaseModel):
-    score: float  # cosine similarity, higher is closer
+    score: float  # what this mode ranks by (vector: cosine, keyword: BM25, hybrid: fused rank). Higher is better
+    cosine: float | None  # similarity of meaning, None in keyword mode
     chunk: ChunkOut
 
 
@@ -146,12 +148,20 @@ def search(
     set_id: str,
     q: str = Query(..., min_length=2, max_length=500),
     k: int = Query(5, ge=1, le=20),
+    mode: Mode = Query("hybrid"),
     include_content: bool = Query(True),
     db: Database = Depends(get_db),
     user: dict = Depends(get_current_user),
 ):
     doc = _get_set(db, set_id, user)
-    hits = search_chunks(db, doc["_id"], q, k)
+    hits = search_hits(db, doc["_id"], q, k, mode)
     if not hits and not (doc.get("chunking") or {}).get("embedded_count"):
         raise HTTPException(status_code=409, detail="This set has no embeddings yet. POST .../chunks/embed first.")
-    return [SearchHit(score=round(score, 4), chunk=_out(row, include_content)) for score, row in hits]
+    return [
+        SearchHit(
+            score=round(h.score, 4),
+            cosine=None if h.cosine is None else round(h.cosine, 4),
+            chunk=_out(h.row, include_content),
+        )
+        for h in hits
+    ]
