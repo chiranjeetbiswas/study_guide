@@ -46,6 +46,16 @@ export default function SetPage() {
         </Link>
         <h1 className="mt-2 text-2xl font-semibold tracking-tight text-stone-800">{set.title}</h1>
         {set.level && <p className="mt-1 text-sm text-stone-500">{set.level}</p>}
+        {set.files.length > 1 && (
+          <ul className="mt-3 flex flex-wrap gap-2" aria-label="Files in this set">
+            {set.files.map((f) => (
+              <li key={f.name} className="rounded-full bg-stone-100 px-3 py-1 text-xs text-stone-600">
+                {f.name}
+                {f.pages ? ` · ${f.pages} page${f.pages === 1 ? "" : "s"}` : ""}
+              </li>
+            ))}
+          </ul>
+        )}
 
         <ul className="mt-6 flex flex-wrap gap-1 border-b border-stone-200 pb-3">
           {TABS.map((name) => (

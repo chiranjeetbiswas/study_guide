@@ -34,6 +34,10 @@ export type GenerateResult = {
 
 export type User = { id: string; email: string };
 
+// A file a study set was made from. A set holds up to MAX_FILES of them.
+export const MAX_FILES = 3;
+export type SetFile = { name: string; type: "pdf" | "txt" | "text"; chars: number; pages: number | null };
+
 export type StudySetSummary = {
   id: string;
   title: string;
@@ -45,6 +49,7 @@ export type StudySetSummary = {
   has_quiz: boolean;
   paper_count: number;
   card_count: number;
+  files: SetFile[];
 };
 
 export type Topic = {
@@ -85,6 +90,7 @@ export type StudySet = StudySetSummary & {
 export type AskSource = {
   number: number; // the [n] used in the answer
   chunk_index: number;
+  source: string | null; // which file the passage is from
   page_number: number | null;
   heading: string | null;
   snippet: string;
@@ -202,9 +208,9 @@ export const api = {
   listSets: () => request<StudySetSummary[]>("/sets"),
   getSet: (id: string) => request<StudySet>(`/sets/${id}`),
   createSet: (notes: string, d: SetDetails) => request<StudySet>("/sets", { method: "POST", body: JSON.stringify({ notes, ...d }) }),
-  createSetFromFile: (file: File, d: SetDetails) => {
+  createSetFromFiles: (files: File[], d: SetDetails) => {
     const form = new FormData();
-    form.append("file", file);
+    files.forEach((f) => form.append("files", f));
     form.append("title", d.title);
     form.append("subject", d.subject);
     form.append("level", d.level);

@@ -42,6 +42,13 @@ class ChunkOut(BaseModel):
     end_kind: str
 
 
+class ChunkFileInfo(BaseModel):
+    name: str
+    type: str
+    chunks: int
+    pages: int | None
+
+
 class ChunkingInfo(BaseModel):
     chunker_version: str
     chunk_size: int
@@ -50,6 +57,7 @@ class ChunkingInfo(BaseModel):
     pages: int | None
     noise_lines_removed: int
     built_at: datetime
+    files: list[ChunkFileInfo] | None = None  # per file; None for sets chunked before sets could hold several
     embedding_model: str | None = None  # Phase 2. None: not embedded (older build, or embedding failed)
     embedding_dim: int | None = None
     embedded_count: int = 0

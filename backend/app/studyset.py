@@ -11,6 +11,7 @@ from app.chunk_store import build_quietly
 from app.ai import chat_json
 from app.auth import get_current_user
 from app.database import get_db
+from app.documents import MAX_FILES, combined_text, default_title, files_of, make_file, unique_names
 from app.extract import MAX_UPLOAD_BYTES, ExtractError, extract_document
 from app.flashcards import MAX_NOTES_CHARS, _split_chunks
 from app.generate import GenerateResponse, generate_cards_for_note
@@ -31,6 +32,13 @@ DIRECT_CONTEXT_CHARS = 24_000
 # ---------- output shapes ----------
 
 
+class FileInfo(BaseModel):
+    name: str
+    type: str  # "pdf" | "txt" | "text"
+    chars: int
+    pages: int | None  # PDFs only
+
+
 class SetOut(BaseModel):
     id: str
     title: str
@@ -42,6 +50,7 @@ class SetOut(BaseModel):
     has_quiz: bool
     paper_count: int
     card_count: int
+    files: list[FileInfo]  # the files the set was made from (up to 3)
 
 
 class Term(BaseModel):
@@ -133,6 +142,10 @@ def _set_out(doc: dict, card_count: int) -> SetOut:
         has_quiz=bool(doc.get("quiz")),
         paper_count=len(doc.get("papers") or []),
         card_count=card_count,
+        files=[
+            FileInfo(name=f["name"], type=f["type"], chars=f["chars"], pages=len(f["pages"]) if f.get("pages") else None)
+            for f in files_of(doc)
+        ],
     )
 
 
@@ -156,41 +169,30 @@ def _audience(doc: dict) -> str:
     return "\n".join(parts)
 
 
-def _create(
-    db: Database,
-    user: dict,
-    notes: str,
-    title: str,
-    subject: str,
-    level: str,
-    *,
-    source_name: str = "pasted text",
-    source_type: str = "text",
-    pages: list[str] | None = None,
-) -> SetDetail:
-    notes = notes.strip()
+def _create(db: Database, user: dict, files: list[dict], title: str, subject: str, level: str) -> SetDetail:
+    """Makes a study set from one to MAX_FILES files (see documents.py for what a file record holds)."""
+    notes = combined_text(files)
     if len(notes) < MIN_NOTES_CHARS:
         raise HTTPException(status_code=422, detail="Notes are too short. Add at least a couple of sentences.")
     if len(notes) > MAX_NOTES_CHARS:
         raise HTTPException(
             status_code=422,
-            detail=f"The notes have {len(notes):,} characters; the limit is {MAX_NOTES_CHARS:,}. Use a shorter section.",
+            detail=f"The notes have {len(notes):,} characters; the limit is {MAX_NOTES_CHARS:,}. Use shorter sections.",
         )
     title, subject, level = title.strip()[:100], subject.strip()[:100], level.strip()[:100]
+    if not title:
+        title = default_title(files) if len(files) > 1 and not subject else _default_title(notes, subject)
     doc = {
         "user_id": user["_id"],
-        "text": notes,
+        "text": notes,  # all files joined: what the AI features that read the whole notes get
         "created_at": models.now(),
-        "title": title or _default_title(notes, subject),
+        "title": title,
         "subject": subject,
         "level": level,
         "revision": None,
         "quiz": None,
         "papers": [],
-        # Where the text came from, and the per-page text of PDFs (the chunker records page numbers from it)
-        "source_name": source_name,
-        "source_type": source_type,
-        "source_pages": [{"number": n, "text": t} for n, t in enumerate(pages, start=1)] if pages else None,
+        "files": files,  # kept per file: the chunker cleans and chunks each one on its own
     }
     doc["_id"] = db.notes.insert_one(doc).inserted_id
     build_quietly(db, doc)  # store this document's chunks (never blocks creation)
@@ -209,30 +211,39 @@ class SetCreate(BaseModel):
 
 @router.post("", response_model=SetDetail, status_code=201)
 def create_set(body: SetCreate, db: Database = Depends(get_db), user: dict = Depends(get_current_user)):
-    return _create(db, user, body.notes, body.title, body.subject, body.level)
+    return _create(db, user, [make_file("pasted text", "text", text=body.notes.strip())], body.title, body.subject, body.level)
 
 
 @router.post("/upload", response_model=SetDetail, status_code=201)
-def create_set_from_file(
-    file: UploadFile = File(...),
+def create_set_from_files(
+    files: list[UploadFile] | None = File(None),  # 1 to MAX_FILES files, sent as repeated "files" fields
+    file: UploadFile | None = File(None),  # a single file in the older "file" field still works
     title: str = Form(""),
     subject: str = Form(""),
     level: str = Form(""),
     db: Database = Depends(get_db),
     user: dict = Depends(get_current_user),
 ):
-    data = file.file.read(MAX_UPLOAD_BYTES + 1)
-    if len(data) > MAX_UPLOAD_BYTES:
-        raise HTTPException(status_code=413, detail=f"File is too large (max {MAX_UPLOAD_BYTES // (1024 * 1024)} MB)")
-    filename = file.filename or ""
-    try:
-        notes, pages = extract_document(filename, data)
-    except ExtractError as e:
-        raise HTTPException(status_code=422, detail=str(e))
-    return _create(
-        db, user, notes, title, subject, level,
-        source_name=filename, source_type="pdf" if pages else "txt", pages=pages,
-    )
+    uploads = ([file] if file else []) + (files or [])
+    if not uploads:
+        raise HTTPException(status_code=422, detail="Add at least one file.")
+    if len(uploads) > MAX_FILES:
+        raise HTTPException(status_code=422, detail=f"You can add at most {MAX_FILES} files at a time.")
+
+    names = unique_names([(u.filename or "file").strip() or "file" for u in uploads])
+    records = []
+    for upload, name in zip(uploads, names):
+        data = upload.file.read(MAX_UPLOAD_BYTES + 1)
+        if len(data) > MAX_UPLOAD_BYTES:
+            raise HTTPException(
+                status_code=413, detail=f"{name}: file is too large (max {MAX_UPLOAD_BYTES // (1024 * 1024)} MB)"
+            )
+        try:
+            text, pages = extract_document(name, data)
+        except ExtractError as e:
+            raise HTTPException(status_code=422, detail=f"{name}: {e}")
+        records.append(make_file(name, "pdf" if pages else "txt", text=text, pages=pages))
+    return _create(db, user, records, title, subject, level)
 
 
 @router.get("", response_model=list[SetOut])

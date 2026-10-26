@@ -51,7 +51,9 @@ export default function SetsPage() {
             <Link href={`/sets/${s.id}`} className="min-w-0 flex-1">
               <p className="truncate font-medium text-stone-800">{s.title}</p>
               <p className="mt-1 text-xs text-stone-500">
-                {[s.level, new Date(s.created_at).toLocaleDateString()].filter(Boolean).join(" · ")}
+                {[s.level, s.files.length > 1 && `${s.files.length} files`, new Date(s.created_at).toLocaleDateString()]
+                  .filter(Boolean)
+                  .join(" · ")}
                 {" · "}
                 {[
                   s.has_revision && "notes",

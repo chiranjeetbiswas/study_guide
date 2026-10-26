@@ -101,6 +101,7 @@ export default function AskTab({ set }: { set: StudySet }) {
                       <details className="rounded-lg bg-stone-50 px-3 py-2 text-sm">
                         <summary className="cursor-pointer text-stone-700">
                           <span className="font-medium">[{s.number}]</span>
+                          {set.files.length > 1 && s.source ? ` ${s.source} ·` : ""}
                           {s.heading ? ` ${s.heading}` : ""}
                           {s.page_number ? ` · page ${s.page_number}` : ""}
                           {s.score !== null && <span className="text-stone-400"> · match {s.score.toFixed(2)}</span>}

@@ -101,6 +101,7 @@ class Verification(BaseModel):
 class Source(BaseModel):
     number: int  # the [n] used in the answer
     chunk_index: int
+    source: str | None  # which file the chunk is from (a set can have up to 3)
     page_number: int | None
     heading: str | None
     snippet: str  # start of the chunk, for the student to recognise it
@@ -134,6 +135,7 @@ def _source(number: int, hit: Hit) -> Source:
     return Source(
         number=number,
         chunk_index=row["chunk_index"],
+        source=row.get("source"),
         page_number=row.get("page_number"),
         heading=row.get("heading"),
         snippet=text[:SNIPPET_CHARS].strip() + ("…" if len(text) > SNIPPET_CHARS else ""),
@@ -147,7 +149,8 @@ def _prompt_sources(hits: list[Hit]) -> str:
     for n, hit in enumerate(hits, start=1):
         row = hit.row
         where = f"page {row['page_number']}" if row.get("page_number") else ""
-        title = ", ".join(x for x in (row.get("heading"), where) if x)
+        file = row.get("source") if row.get("source_type") in ("pdf", "txt") else None  # which file, for sets with several
+        title = ", ".join(x for x in (file, row.get("heading"), where) if x)
         parts.append(f"[{n}]{' (' + title + ')' if title else ''}\n{row['content']}")
     return "\n\n".join(parts)
 
