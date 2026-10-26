@@ -93,12 +93,22 @@ export type AskSource = {
 };
 export type SearchMode = "hybrid" | "vector" | "keyword";
 export type AskTurn = { question: string; answer: string };
+export type VerificationRound = { attempt: number; supported: boolean | null; issues: string[] };
+export type Verification = {
+  // verified: the reviewer found every claim in the notes. unverified: still failing after the last attempt.
+  // unchecked: the review was off or could not run. not_applicable: the notes do not cover the question.
+  status: "verified" | "unverified" | "unchecked" | "not_applicable";
+  attempts: number; // answers the generator wrote
+  max_attempts: number;
+  rounds: VerificationRound[];
+};
 export type AskResult = {
   search_query: string; // what was searched: the question, or its standalone rewrite after a follow-up
   mode: SearchMode;
   found: boolean;
   answer: string;
   sources: AskSource[];
+  verification: Verification;
 };
 
 export type SetDetails ={ title: string; subject: string; level: string };
@@ -209,8 +219,8 @@ export const api = {
   deletePaper: (id: string, paperId: string) => request<StudySet>(`/sets/${id}/paper/${paperId}`, { method: "DELETE" }),
   makeSetFlashcards: (id: string, maxCards: number) =>
     request<GenerateResult>(`/sets/${id}/flashcards`, { method: "POST", body: JSON.stringify({ max_cards: maxCards }) }),
-  askSet: (id: string, question: string, history: AskTurn[] = [], mode: SearchMode = "hybrid") =>
-    request<AskResult>(`/sets/${id}/ask`, { method: "POST", body: JSON.stringify({ question, history, mode }) }),
+  askSet: (id: string, question: string, history: AskTurn[] = [], mode: SearchMode = "hybrid", verify = true) =>
+    request<AskResult>(`/sets/${id}/ask`, { method: "POST", body: JSON.stringify({ question, history, mode, verify }) }),
   listCards: (status: CardStatus) => request<Card[]>(`/cards?status=${status}`),
   checkStats: () => request<CheckStats>("/stats/checks"),
   dueCards: () => request<Card[]>("/quiz/due"),

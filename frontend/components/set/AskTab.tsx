@@ -4,7 +4,41 @@ import { useState } from "react";
 import { api, type AskResult, type SearchMode, type StudySet } from "@/lib/api";
 import { ErrorBox, errorMessage, inputClass, primaryButton, secondaryButton } from "./ui";
 
-type Turn = { question: string; result: AskResult };
+type Turn = { question: string; result: AskResult; verifyWasOn: boolean };
+
+// What the fact-check found, shown under the answer
+function VerificationNote({ turn }: { turn: Turn }) {
+  const v = turn.result.verification;
+  if (v.status === "verified") {
+    return (
+      <p className="mt-3 text-xs text-emerald-700">
+        ✓ Checked against your notes
+        {v.attempts > 1 && ` — corrected after review (answer ${v.attempts} of ${v.max_attempts})`}
+      </p>
+    );
+  }
+  if (v.status === "unverified") {
+    const issues = v.rounds[v.rounds.length - 1]?.issues ?? [];
+    return (
+      <div className="mt-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900">
+        <p className="font-medium">
+          Could not fully verify this answer after {v.attempts} attempts. Check it against the sources below.
+        </p>
+        {issues.length > 0 && (
+          <ul className="mt-1 list-disc pl-4">
+            {issues.map((issue, i) => (
+              <li key={i}>{issue}</li>
+            ))}
+          </ul>
+        )}
+      </div>
+    );
+  }
+  if (v.status === "unchecked" && turn.verifyWasOn) {
+    return <p className="mt-3 text-xs text-stone-400">The fact-check could not run, so this answer is unchecked.</p>;
+  }
+  return null;
+}
 
 // How many earlier turns are sent along, so "explain that more" can be understood
 const HISTORY_TURNS = 3;
@@ -18,6 +52,7 @@ const MODES: { value: SearchMode; label: string; hint: string }[] = [
 export default function AskTab({ set }: { set: StudySet }) {
   const [question, setQuestion] = useState("");
   const [mode, setMode] = useState<SearchMode>("hybrid");
+  const [verify, setVerify] = useState(true);
   // oldest first, so the newest answer is at the bottom, like a chat
   const [turns, setTurns] = useState<Turn[]>([]);
   const [loading, setLoading] = useState(false);
@@ -31,8 +66,8 @@ export default function AskTab({ set }: { set: StudySet }) {
     setError(null);
     try {
       const history = turns.slice(-HISTORY_TURNS).map((t) => ({ question: t.question, answer: t.result.answer }));
-      const result = await api.askSet(set.id, q, history, mode);
-      setTurns((t) => [...t, { question: q, result }]);
+      const result = await api.askSet(set.id, q, history, mode, verify);
+      setTurns((t) => [...t, { question: q, result, verifyWasOn: verify }]);
       setQuestion("");
     } catch (err) {
       setError(errorMessage(err));
@@ -53,6 +88,7 @@ export default function AskTab({ set }: { set: StudySet }) {
             <p className={`mt-2 whitespace-pre-wrap ${t.result.found ? "text-stone-800" : "text-amber-800"}`}>
               {t.result.answer}
             </p>
+            <VerificationNote turn={t} />
 
             {t.result.sources.length > 0 && (
               <div className="mt-4 border-t border-stone-100 pt-3">
@@ -93,7 +129,7 @@ export default function AskTab({ set }: { set: StudySet }) {
           className={`${inputClass} min-w-0 flex-1`}
         />
         <button type="submit" disabled={loading || question.trim().length < 3} className={primaryButton}>
-          {loading ? "Searching your notes…" : "Ask"}
+          {loading ? (verify ? "Answering and checking…" : "Searching your notes…") : "Ask"}
         </button>
       </form>
 
@@ -113,6 +149,10 @@ export default function AskTab({ set }: { set: StudySet }) {
             ))}
           </select>
           <span className="hidden sm:inline">{MODES.find((m) => m.value === mode)?.hint}</span>
+        </label>
+        <label className="flex items-center gap-2" title="A second AI checks the answer against your notes and asks for a rewrite if it finds a mistake. Slower.">
+          <input type="checkbox" checked={verify} onChange={(e) => setVerify(e.target.checked)} />
+          Fact-check answers
         </label>
         {turns.length > 0 && (
           <button type="button" onClick={() => setTurns([])} className={secondaryButton}>

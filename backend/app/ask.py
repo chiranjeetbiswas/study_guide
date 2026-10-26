@@ -1,9 +1,15 @@
-"""Ask a question about a study set and get an answer taken from its notes, with citations (RAG Phases 3 and 4).
+"""Ask a question about a study set and get an answer taken from its notes, with citations (RAG Phases 3 to 5).
 
-    question (+ earlier turns)  -->  standalone question  -->  hybrid search  -->  AI answers from ONLY the chunks
-                                     (only if there were earlier turns)  (retrieval.py)  -->  answer + sources
+    question (+ earlier turns)  -->  standalone question  -->  hybrid search  -->  GENERATOR answers from ONLY the chunks
+                                     (only if there were earlier turns)  (retrieval.py)       |
+                                                                                              v
+                      answer + sources + verification  <--  (verify.py: REVIEWER checks it, up to 3 attempts)
 
-  POST /sets/{id}/ask    {"question": "...", "history": [{"question": "...", "answer": "..."}], "mode": "hybrid"}
+  POST /sets/{id}/ask    {"question": "...", "history": [{"question": "...", "answer": "..."}], "mode": "hybrid",
+                          "verify": true}
+
+Verification: a second AI call reads the same chunks and the answer and checks that every claim is in the notes.
+If not, its list of bad claims goes back to the generator for a new answer, up to 3 attempts (see verify.py).
 
 Memory: the server keeps no conversation. The page sends the last few turns with each question. A follow-up such as
 "explain that more" cannot be searched as it is, so the AI first rewrites it into a question that makes sense alone
@@ -28,8 +34,9 @@ from app.auth import get_current_user
 from app.chunk_store import build_and_store, embed_quietly
 from app.database import get_db
 from app.embeddings import EMBED_MODEL
-from app.retrieval import MODES, Hit, Mode, search
+from app.retrieval import Hit, search
 from app.studyset import _get_set
+from app.verify import MAX_ATTEMPTS, REVIEW_PROMPT, Draft, Outcome, Review, parse_review, verify_loop
 
 router = APIRouter(prefix="/sets/{set_id}/ask", tags=["ask your notes"])
 
@@ -72,6 +79,23 @@ class AskRequest(BaseModel):
     question: str = Field(min_length=3, max_length=MAX_QUESTION_CHARS)
     history: list[Turn] = Field(default_factory=list, max_length=20)  # earlier turns, oldest first
     mode: Literal["hybrid", "vector", "keyword"] = "hybrid"
+    verify: bool = True  # have a second AI fact-check the answer against the notes (slower, up to 3 attempts)
+
+
+class VerificationRound(BaseModel):
+    attempt: int
+    supported: bool | None  # None: the reviewer could not give a verdict
+    issues: list[str]  # claims the reviewer could not find in the notes
+
+
+class Verification(BaseModel):
+    # verified: the reviewer found every claim in the notes. unverified: still failing after the last attempt, so
+    # treat the answer with care. unchecked: the review was off or could not run. not_applicable: nothing to check
+    # (the notes do not cover the question).
+    status: Literal["verified", "unverified", "unchecked", "not_applicable"]
+    attempts: int  # answers the generator wrote
+    max_attempts: int
+    rounds: list[VerificationRound]
 
 
 class Source(BaseModel):
@@ -90,6 +114,7 @@ class AskResponse(BaseModel):
     found: bool  # false: the notes do not cover the question
     answer: str
     sources: list[Source]  # the sources the answer used (or the closest ones when found is false)
+    verification: Verification
 
 
 def _ensure_embedded(db: Database, doc: dict) -> None:
@@ -136,6 +161,36 @@ def _used_numbers(raw, count: int) -> list[int]:
     return seen
 
 
+def _draft_from(data: dict, count: int) -> Draft:
+    """The generator's JSON as a Draft. `count` is how many sources it was given."""
+    answer = data.get("answer") if isinstance(data.get("answer"), str) else ""
+    found = data.get("found") is True and bool(answer.strip())
+    used = _used_numbers(data.get("used"), count) if found else []
+    if found and not used:
+        used = list(range(1, count + 1))  # answered but did not say from where: show everything it was given
+    return Draft(found=found, answer=answer.strip(), used=used)
+
+
+def _generate(sources_text: str, question: str, feedback: str | None, count: int) -> Draft:
+    """The generator agent: answers from the sources. After a rejected answer, `feedback` says what to fix."""
+    message = f"SOURCES:\n{sources_text}\n\nQUESTION:\n{question}"
+    if feedback:
+        message += f"\n\n{feedback}"
+    data = chat_json(ASK_PROMPT, message, max_tokens=1500, label="ask:retry" if feedback else "ask")
+    return _draft_from(data, count)
+
+
+def _review(sources_text: str, question: str, draft: Draft) -> Review | None:
+    """The reviewer agent: checks the answer against the same sources. None if it gave no usable verdict."""
+    data = chat_json(
+        REVIEW_PROMPT,
+        f"SOURCES:\n{sources_text}\n\nQUESTION:\n{question}\n\nANSWER:\n{draft.answer}",
+        max_tokens=800,
+        label="ask:review",
+    )
+    return parse_review(data)
+
+
 def _history_text(history: list[Turn]) -> str:
     """The last turns as plain text for the rewrite prompt. Long answers are cut: only the topic matters."""
     lines = []
@@ -176,32 +231,48 @@ def ask(
     _ensure_embedded(db, doc)
 
     with trace.traced(
-        db, user, "ask", doc["_id"], question_chars=len(question), history_turns=len(body.history), mode=body.mode
+        db,
+        user,
+        "ask",
+        doc["_id"],
+        question_chars=len(question),
+        history_turns=len(body.history),
+        mode=body.mode,
+        verify=body.verify,
     ):
         search_query = _standalone_question(body.history, question)
         hits = search(db, doc["_id"], search_query, TOP_K, body.mode)
         if not hits:
             raise HTTPException(status_code=503, detail="Could not search this set. Please try again.")
         trace.meta(sources_retrieved=len(hits))
-        data = chat_json(
-            ASK_PROMPT,
-            f"SOURCES:\n{_prompt_sources(hits)}\n\nQUESTION:\n{search_query}",
-            max_tokens=1500,
-            label="ask",
-        )
+        sources_text = _prompt_sources(hits)
 
-    answer = data.get("answer") if isinstance(data.get("answer"), str) else ""
-    found = data.get("found") is True and bool(answer.strip())
-    used = _used_numbers(data.get("used"), len(hits)) if found else []
-    if found and not used:
-        used = list(range(1, len(hits) + 1))  # answered but did not say from where: show everything it was given
-    if not found:
-        answer = answer.strip() or "Your notes do not seem to cover this question."
+        def generate(feedback: str | None) -> Draft:
+            return _generate(sources_text, search_query, feedback, len(hits))
+
+        def review(draft: Draft) -> Review | None:
+            return _review(sources_text, search_query, draft)
+
+        outcome = verify_loop(generate, review) if body.verify else Outcome(generate(None), "unchecked", [], 1)
+        trace.meta(verification=outcome.status, attempts=outcome.attempts)
+
+    draft = outcome.draft
+    answer = draft.answer.strip()
+    if draft.found:
+        used = draft.used
+    else:
+        answer = answer or "Your notes do not seem to cover this question."
         used = list(range(1, len(hits) + 1))  # the closest passages, so the student can look for themselves
     return AskResponse(
         search_query=search_query,
         mode=body.mode,
-        found=found,
-        answer=answer.strip(),
+        found=draft.found,
+        answer=answer,
         sources=[_source(n, hits[n - 1]) for n in used],
+        verification=Verification(
+            status=outcome.status,
+            attempts=outcome.attempts,
+            max_attempts=MAX_ATTEMPTS,
+            rounds=[VerificationRound(attempt=r.attempt, supported=r.supported, issues=r.issues) for r in outcome.rounds],
+        ),
     )
