@@ -22,6 +22,10 @@ Collection `chunks`, one document per chunk:
 
 The notes document records the settings of the current build in notes.chunking, so you can always tell
 which experiment the stored chunks came from. Rebuilding replaces the old chunks of that document.
+
+Phase 2 adds `embedding` and `embedding_model` to each chunk (see embeddings.py). They are filled in right after
+the chunks are saved. If embedding fails, the chunks stay and notes.chunking.embedded_count is 0: call
+POST /sets/{id}/chunks/embed to try again.
 """
 
 import logging
@@ -30,6 +34,7 @@ from pymongo.database import Database
 
 from app import models
 from app.chunking import CHUNK_OVERLAP, CHUNK_SIZE, CHUNKER_VERSION, Page, chunk_document, pages_from_text
+from app.embeddings import embed_document_chunks
 
 log = logging.getLogger("chunk_store")
 
@@ -85,8 +90,18 @@ def build_and_store(db: Database, doc: dict, *, size: int | None = None, overlap
         "noise_lines_removed": sum(n["times"] for n in result.noise_removed),
         "built_at": created,
     }
+    info.update(embed_quietly(db, doc["_id"]))
     db.notes.update_one({"_id": doc["_id"]}, {"$set": {"chunking": info}})
     return info
+
+
+def embed_quietly(db: Database, document_id) -> dict:
+    """Embeds a document's chunks. A failure (model not downloaded, out of memory) must not lose the chunks."""
+    try:
+        return embed_document_chunks(db, document_id)
+    except Exception:
+        log.exception("could not embed chunks of document %s", document_id)
+        return {"embedding_model": None, "embedding_dim": None, "embedded_count": 0}
 
 
 def build_quietly(db: Database, doc: dict) -> None:

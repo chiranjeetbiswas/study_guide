@@ -19,3 +19,6 @@ out/
 .idea/
 .DS_Store
 Thumbs.db
+
+# Downloaded embedding model
+.model_cache/
