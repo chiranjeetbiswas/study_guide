@@ -82,7 +82,18 @@ export type StudySet = StudySetSummary & {
   papers: Paper[];
 };
 
-export type SetDetails = { title: string; subject: string; level: string };
+export type AskSource = {
+  number: number; // the [n] used in the answer
+  chunk_index: number;
+  page_number: number | null;
+  heading: string | null;
+  snippet: string;
+  text: string;
+  score: number;
+};
+export type AskResult = { found: boolean; answer: string; sources: AskSource[] };
+
+export type SetDetails ={ title: string; subject: string; level: string };
 
 // The login token lives in localStorage so it survives a refresh. Trade-off: any script running on
 // the page (e.g. from an XSS bug) could read it. httpOnly cookies avoid that but need CSRF handling.
@@ -190,6 +201,8 @@ export const api = {
   deletePaper: (id: string, paperId: string) => request<StudySet>(`/sets/${id}/paper/${paperId}`, { method: "DELETE" }),
   makeSetFlashcards: (id: string, maxCards: number) =>
     request<GenerateResult>(`/sets/${id}/flashcards`, { method: "POST", body: JSON.stringify({ max_cards: maxCards }) }),
+  askSet: (id: string, question: string) =>
+    request<AskResult>(`/sets/${id}/ask`, { method: "POST", body: JSON.stringify({ question }) }),
   listCards: (status: CardStatus) => request<Card[]>(`/cards?status=${status}`),
   checkStats: () => request<CheckStats>("/stats/checks"),
   dueCards: () => request<Card[]>("/quiz/due"),

@@ -3,13 +3,14 @@
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import AskTab from "@/components/set/AskTab";
 import FlashcardsTab from "@/components/set/FlashcardsTab";
 import PaperTab from "@/components/set/PaperTab";
 import QuizTab from "@/components/set/QuizTab";
 import RevisionTab from "@/components/set/RevisionTab";
 import { api, type StudySet } from "@/lib/api";
 
-const TABS = ["Revision notes", "Quiz", "Exam paper", "Flashcards"] as const;
+const TABS = ["Revision notes", "Quiz", "Exam paper", "Flashcards", "Ask your notes"] as const;
 type TabName = (typeof TABS)[number];
 
 export default function SetPage() {
@@ -67,6 +68,7 @@ export default function SetPage() {
         {tab === "Quiz" && <QuizTab set={set} onChange={setSet} />}
         {tab === "Exam paper" && <PaperTab set={set} onChange={setSet} />}
         {tab === "Flashcards" && <FlashcardsTab set={set} onChange={setSet} />}
+        {tab === "Ask your notes" && <AskTab set={set} />}
       </div>
     </div>
   );

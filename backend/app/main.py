@@ -7,6 +7,7 @@ from pymongo.database import Database
 
 from app.auth import get_current_user, router as auth_router
 from app.cards import router as cards_router
+from app.ask import router as ask_router
 from app.chunks_api import router as chunks_router
 from app.config import FRONTEND_ORIGINS, GROQ_API_KEY
 from app.database import get_db, init_indexes
@@ -39,6 +40,7 @@ app.include_router(cards_router)
 app.include_router(quiz_router)
 app.include_router(studyset_router)
 app.include_router(chunks_router)
+app.include_router(ask_router)
 app.include_router(debug_router)
 
 
