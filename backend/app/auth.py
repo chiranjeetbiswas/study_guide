@@ -27,6 +27,7 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 
 
 class SignupIn(BaseModel):
+    name: str = Field(min_length=1, max_length=60)
     email: EmailStr
     password: str = Field(min_length=8, max_length=128)
 
@@ -39,6 +40,8 @@ class TokenOut(BaseModel):
 class UserOut(BaseModel):
     id: str
     email: str
+    name: str | None = None  # accounts made before names were asked for have none
+    created_at: datetime | None = None
 
 
 def _normalize_email(email: str) -> str:
@@ -75,12 +78,17 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Database = Depends
 @router.post("/signup", response_model=TokenOut, status_code=201)
 def signup(body: SignupIn, db: Database = Depends(get_db)):
     email = _normalize_email(body.email)
+    name = body.name.strip()
+    if not name:
+        raise HTTPException(status_code=422, detail="Please enter your name")
     taken = HTTPException(status_code=409, detail="An account with this email already exists")
     if db.users.find_one({"email": email}, {"_id": 1}):
         raise taken
 
     try:
-        result = db.users.insert_one({"email": email, "password_hash": hasher.hash(body.password), "created_at": now()})
+        result = db.users.insert_one(
+            {"name": name, "email": email, "password_hash": hasher.hash(body.password), "created_at": now()}
+        )
     except DuplicateKeyError:  # two signups with the same email raced past the check above
         raise taken
     return TokenOut(access_token=create_access_token(str(result.inserted_id)))
@@ -110,4 +118,6 @@ def login(form: OAuth2PasswordRequestForm = Depends(), db: Database = Depends(ge
 
 @router.get("/me", response_model=UserOut)
 def me(user: dict = Depends(get_current_user)):
-    return UserOut(id=str(user["_id"]), email=user["email"])
+    return UserOut(
+        id=str(user["_id"]), email=user["email"], name=user.get("name"), created_at=user.get("created_at")
+    )

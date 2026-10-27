@@ -13,7 +13,7 @@ class CardStatus(str, enum.Enum):
 
 # Collections (documents are plain dicts):
 #
-# users: {_id, email (unique, stored lowercase), password_hash (Argon2id, never the password), created_at}
+# users: {_id, name (optional, absent on older accounts), email (unique, stored lowercase), password_hash (Argon2id, never the password), created_at}
 #
 # notes: {_id, user_id, text, created_at}
 #

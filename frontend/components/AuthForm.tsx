@@ -6,8 +6,10 @@ import { useAuth } from "@/components/AuthProvider";
 
 export default function AuthForm({ mode }: { mode: "login" | "signup" }) {
   const { login, signup } = useAuth();
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -18,7 +20,7 @@ export default function AuthForm({ mode }: { mode: "login" | "signup" }) {
     setBusy(true);
     setError(null);
     try {
-      await (isSignup ? signup : login)(email, password);
+      await (isSignup ? signup(name.trim(), email, password) : login(email, password));
       // AuthProvider redirects to the home page once the user is set
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");
@@ -39,6 +41,20 @@ export default function AuthForm({ mode }: { mode: "login" | "signup" }) {
       </p>
 
       <form onSubmit={handleSubmit} className="mt-8 space-y-4">
+        {isSignup && (
+          <label className="block text-sm text-stone-600">
+            Name
+            <input
+              type="text"
+              required
+              maxLength={60}
+              autoComplete="name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className={input}
+            />
+          </label>
+        )}
         <label className="block text-sm text-stone-600">
           Email
           <input
@@ -52,16 +68,50 @@ export default function AuthForm({ mode }: { mode: "login" | "signup" }) {
         </label>
         <label className="block text-sm text-stone-600">
           Password
-          <input
-            type="password"
-            required
-            minLength={isSignup ? 8 : undefined}
-            maxLength={128}
-            autoComplete={isSignup ? "new-password" : "current-password"}
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className={input}
-          />
+          <div className="relative">
+            <input
+              type={showPassword ? "text" : "password"}
+              required
+              minLength={isSignup ? 8 : undefined}
+              maxLength={128}
+              autoComplete={isSignup ? "new-password" : "current-password"}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className={`${input} pr-11`}
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword((s) => !s)}
+              aria-label={showPassword ? "Hide password" : "Show password"}
+              aria-pressed={showPassword}
+              className="absolute inset-y-0 right-0 mt-1 flex items-center px-3 text-stone-400 hover:text-stone-600"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="h-5 w-5"
+                aria-hidden="true"
+              >
+                {showPassword ? (
+                  <>
+                    <path d="M3 3l18 18" />
+                    <path d="M10.6 6.1A9.8 9.8 0 0 1 12 6c5 0 8.5 4 9.5 6a12.7 12.7 0 0 1-2.7 3.4M6.5 7.6A12.6 12.6 0 0 0 2.5 12c1 2 4.5 6 9.5 6 1.5 0 2.8-.4 4-.9" />
+                    <path d="M9.9 9.9a3 3 0 0 0 4.2 4.2" />
+                  </>
+                ) : (
+                  <>
+                    <path d="M2.5 12C3.5 10 7 6 12 6s8.5 4 9.5 6c-1 2-4.5 6-9.5 6s-8.5-4-9.5-6z" />
+                    <circle cx="12" cy="12" r="3" />
+                  </>
+                )}
+              </svg>
+            </button>
+          </div>
           {isSignup && <span className="mt-1 block text-xs text-stone-400">At least 8 characters.</span>}
         </label>
 

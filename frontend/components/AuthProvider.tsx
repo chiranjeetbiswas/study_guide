@@ -7,7 +7,7 @@ import { api, tokenStore, type User } from "@/lib/api";
 type AuthState = {
   user: User | null;
   login: (email: string, password: string) => Promise<void>;
-  signup: (email: string, password: string) => Promise<void>;
+  signup: (name: string, email: string, password: string) => Promise<void>;
   logout: () => void;
 };
 
@@ -59,7 +59,7 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
   const value: AuthState = {
     user,
     login: async (email, password) => finishAuth((await api.login(email, password)).access_token),
-    signup: async (email, password) => finishAuth((await api.signup(email, password)).access_token),
+    signup: async (name, email, password) => finishAuth((await api.signup(name, email, password)).access_token),
     logout: () => {
       tokenStore.clear();
       setUser(null);

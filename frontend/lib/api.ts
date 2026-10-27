@@ -32,7 +32,7 @@ export type GenerateResult = {
   dropped: number;
 };
 
-export type User = { id: string; email: string };
+export type User = { id: string; email: string; name: string | null; created_at: string | null };
 
 // A file a study set was made from. A set holds up to MAX_FILES of them.
 export const MAX_FILES = 3;
@@ -183,8 +183,8 @@ async function request<T>(path: string, init?: RequestInit, { auth = true } = {}
 type Token = { access_token: string; token_type: string };
 
 export const api = {
-  signup: (email: string, password: string) =>
-    request<Token>("/auth/signup", { method: "POST", body: JSON.stringify({ email, password }) }, { auth: false }),
+  signup: (name: string, email: string, password: string) =>
+    request<Token>("/auth/signup", { method: "POST", body: JSON.stringify({ name, email, password }) }, { auth: false }),
   // The backend's login takes form fields (OAuth2 standard), with the email in "username"
   login: (email: string, password: string) =>
     request<Token>(
